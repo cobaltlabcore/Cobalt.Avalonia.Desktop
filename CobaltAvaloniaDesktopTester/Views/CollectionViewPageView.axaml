@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:CobaltAvaloniaDesktopTester.ViewModels"
              xmlns:cobalt="using:Cobalt.Avalonia.Desktop.Data"
+             xmlns:editors="using:Cobalt.Avalonia.Desktop.Controls.Editors"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="800"
@@ -34,9 +36,12 @@
                        Foreground="{DynamicResource CobaltForegroundSecondaryBrush}" />
 
             <!-- Filter -->
-            <TextBox x:Name="FilterTextBox"
-                     Watermark="Filter by name..."
-                     Text="{Binding FilterText}" />
+            <editors:TextEditor Watermark="Filter by name..." Text="{Binding FilterText}">
+                <editors:TextEditor.LeadingContent>
+                    <PathIcon Data="{pia:IconGeometry Icon=magnifying_glass}" Width="16" Height="16"
+                              Foreground="{DynamicResource CobaltForegroundSecondaryBrush}" />
+                </editors:TextEditor.LeadingContent>
+            </editors:TextEditor>
 
             <!-- Actions -->
             <StackPanel Orientation="Horizontal" Spacing="8">

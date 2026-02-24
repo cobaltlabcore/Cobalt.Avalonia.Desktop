@@ -32,9 +32,17 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Margin="1">
-                        <Grid RowDefinitions="*,Auto">
+                        <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*">
+                            <!-- Leading content -->
+                            <ContentPresenter Grid.Row="0" Grid.Column="0"
+                                              x:Name="PART_LeadingContent"
+                                              Content="{Binding LeadingContent, RelativeSource={RelativeSource TemplatedParent}}"
+                                              VerticalAlignment="Top"
+                                              Margin="8,8,0,0"
+                                              IsVisible="{Binding LeadingContent, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
                             <!-- Text area with vertical scroll -->
-                            <ScrollViewer Grid.Row="0"
+                            <ScrollViewer Grid.Row="0" Grid.Column="1"
                                           Cursor="IBeam"
                                           HorizontalScrollBarVisibility="Hidden"
                                           VerticalScrollBarVisibility="Auto">
@@ -64,7 +72,7 @@
                             </ScrollViewer>
 
                             <!-- Unit / Action content row at bottom -->
-                            <StackPanel Grid.Row="1"
+                            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         Margin="0,0,0,4">

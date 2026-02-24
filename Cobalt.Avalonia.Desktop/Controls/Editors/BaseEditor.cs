@@ -12,6 +12,9 @@ public class BaseEditor : TextBox
     public static readonly StyledProperty<string?> UnitProperty =
         AvaloniaProperty.Register<BaseEditor, string?>(nameof(Unit));
 
+    public static readonly StyledProperty<object?> LeadingContentProperty =
+        AvaloniaProperty.Register<BaseEditor, object?>(nameof(LeadingContent));
+
     public static readonly StyledProperty<object?> ActionContentProperty =
         AvaloniaProperty.Register<BaseEditor, object?>(nameof(ActionContent));
 
@@ -31,6 +34,12 @@ public class BaseEditor : TextBox
     {
         get => GetValue(UnitProperty);
         set => SetValue(UnitProperty, value);
+    }
+
+    public object? LeadingContent
+    {
+        get => GetValue(LeadingContentProperty);
+        set => SetValue(LeadingContentProperty, value);
     }
 
     public object? ActionContent

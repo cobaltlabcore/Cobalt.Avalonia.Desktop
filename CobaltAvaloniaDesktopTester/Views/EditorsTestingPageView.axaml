@@ -3,6 +3,7 @@
              xmlns:vm="using:CobaltAvaloniaDesktopTester.ViewModels"
              xmlns:editors="using:Cobalt.Avalonia.Desktop.Controls.Editors"
              xmlns:cobalt="using:Cobalt.Avalonia.Desktop.Controls"
+             xmlns:pia="using:PhosphorIconsAvalonia.Markup"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
@@ -156,6 +157,35 @@
                     </Grid>
                     <Grid ColumnDefinitions="*,Auto">
                         <editors:TextEditor Watermark="No title" />
+                        <TextBlock Grid.Column="1" Text="{Binding TextValueInfo}" VerticalAlignment="Center"
+                                   FontSize="12" Foreground="{DynamicResource CobaltForegroundSecondaryBrush}"
+                                   Margin="12,0,0,0" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <editors:TextEditor Title="Search (with leading icon)"
+                                            Watermark="Search..."
+                                            Text="{Binding TextValue}">
+                            <editors:TextEditor.LeadingContent>
+                                <PathIcon Data="{pia:IconGeometry Icon=magnifying_glass}" Width="16" Height="16"
+                                          Foreground="{DynamicResource CobaltForegroundSecondaryBrush}" />
+                            </editors:TextEditor.LeadingContent>
+                        </editors:TextEditor>
+                        <TextBlock Grid.Column="1" Text="{Binding TextValueInfo}" VerticalAlignment="Center"
+                                   FontSize="12" Foreground="{DynamicResource CobaltForegroundSecondaryBrush}"
+                                   Margin="12,0,0,0" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <editors:TextEditor Title="Password (with leading icon)"
+                                            Watermark="Enter password..."
+                                            PasswordChar="*">
+                            <editors:TextEditor.LeadingContent>
+                                <PathIcon Data="{pia:IconGeometry Icon=lock}" Width="16" Height="16"
+                                          Foreground="{DynamicResource CobaltForegroundSecondaryBrush}" />
+                            </editors:TextEditor.LeadingContent>
+                        </editors:TextEditor>
+                        <TextBlock Grid.Column="1" Text="{Binding TextValueInfo}" VerticalAlignment="Center"
+                                   FontSize="12" Foreground="{DynamicResource CobaltForegroundSecondaryBrush}"
+                                   Margin="12,0,0,0" />
                     </Grid>
                     <Grid ColumnDefinitions="*,Auto">
                         <editors:MultiLineTextEditor Title="Notes (string, required, min 5)"
