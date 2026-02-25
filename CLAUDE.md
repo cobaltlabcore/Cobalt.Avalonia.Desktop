@@ -17,27 +17,35 @@ No test projects exist yet.
 
 ## Architecture
 
-- **Framework**: Avalonia 11.3 with FluentTheme (Dark variant), .NET 10.0
+- **Framework**: Avalonia 11.3 with FluentTheme (Dark variant), .NET 10.0, C# 14 (LangVersion 14)
 - **MVVM**: CommunityToolkit.Mvvm with compiled bindings (`AvaloniaUseCompiledBindingsByDefault=true`)
+- **DI**: `Microsoft.Extensions.DependencyInjection` + `Microsoft.Extensions.Hosting` — `Program.cs` builds an `IHost`, registers services, then starts Avalonia
 - **Icons**: PhosphorIconsAvalonia — use `IconService.CreateGeometry(Icon.xxx, IconType.regular)` for navigation item icons
 
-### Two-Project Structure
-
-**CobaltAvaloniaDesktopTester** — Tester application (WinExe). Contains ViewModels, Views, and app entry point. Depends on CommunityToolkit.Mvvm, Enigma.Cryptography, LiveChartsCore, PhosphorIconsAvalonia.
+### Project Structure
 
 **Cobalt.Avalonia.Desktop** — Reusable control library (no CommunityToolkit dependency). Contains:
 - `Controls/` — TemplatedControls organized in subdirectories: `Navigation/`, `Docking/`, `Ribbon/`, `Editors/`, `CalendarSchedule/`, `Displayer2D/`, plus top-level `ContentDialog`, `Overlay`, `InfoBar`, `SettingsCard`, `SettingsCardExpander`
-- `Services/` — Each service control has a matching service + interface: `NavigationService`, `ContentDialogService`, `OverlayService`, `InfoBarService`
+- `Data/` — `CollectionView` subsystem (filtering, sorting, grouping over `IEnumerable` + `INotifyCollectionChanged`)
+- `Services/` — Each service control has a matching service + interface: `NavigationService`, `ContentDialogService`, `OverlayService`, `InfoBarService`, `FileDialogService`, `FolderDialogService`
 - `Themes/` — Control templates (AXAML). Composed via `Fluent.axaml` and included in App.axaml as `avares://Cobalt.Avalonia.Desktop/Themes/Fluent.axaml`
+
+**CobaltAvaloniaDesktopTester** — Tester application (WinExe). Contains ViewModels, Views, and app entry point. Depends on CommunityToolkit.Mvvm, Enigma.Cryptography, LiveChartsCore, PhosphorIconsAvalonia. Includes an embedded ASP.NET Core Minimal API server (`ApiHostedService`) on localhost:5100.
+
+**Cobalt.Localization** / **Cobalt.Localization.Avalonia** — Localization library (netstandard2.0) with Avalonia markup extension (`TranslateExtension`).
+
+**Cobalt.Iam** — Identity and Access Management (netstandard2.0): User/Role/Group/Session models, JSON-backed repositories, authentication/authorization services.
 
 ### Patterns
 
-- **ViewLocator**: Resolves views by replacing "ViewModel" with "View" in the type name. Page VMs go in `ViewModels/`, matching views in `Views/`. ViewModels inherit from `ObservableObject` directly (no `ViewModelBase`).
-- **Naming**: Page ViewModels are `{Name}PageViewModel`, views are `{Name}PageView`.
-- **Navigation**: `NavigationService` holds `NavigationItem` instances. Selecting an item invokes its `Factory` (`Func<object>`) to create a page ViewModel, which `ContentControl` + `ViewLocator` renders.
+- **DI registration**: `ServiceCollectionExtensions.cs` uses C# 14 `extension` blocks on `IServiceCollection` to register services, views (Transient), and ViewModels (Singleton). `App.axaml.cs` resolves from the container and wires service hosts.
+- **Naming**: Page ViewModels are `{Name}PageViewModel`, views are `{Name}PageView`. VMs go in `ViewModels/`, views in `Views/`. ViewModels inherit from `ObservableObject` directly (no `ViewModelBase`).
+- **Navigation**: `NavigationService` holds `NavigationItem` instances. Selecting an item triggers `PageFactory(NavigationItem)` which creates a page View + ViewModel pair. The default factory uses `Activator.CreateInstance`; the tester overrides it with DI-resolved instances. `ContentControl` bound to `CurrentPage` renders the result.
+- **Navigation lifecycle**: ViewModels can implement `INavigationViewModel` with `OnDisappearingAsync()` (return `false` to cancel navigation) and `OnAppearingAsync(object? parameter)`. Navigation is serialized with `SemaphoreSlim(1,1)` — concurrent navigations are dropped.
 - **Host pattern**: `ContentDialog`, `Overlay`, and `InfoBar` are all hosted as siblings in MainWindow's root `Panel`. Each is registered with its service via `RegisterHost()` from `App.axaml.cs` `OnFrameworkInitializationCompleted`. ViewModels receive services through constructor injection from `MainWindowViewModel`.
 - **TemplatedControls**: Custom controls in Cobalt are `TemplatedControl` (not `UserControl`). C# classes go in `Controls/`, AXAML templates in `Themes/`. When adding a new control, also add its template include to `Themes/Fluent.axaml`. Use `{Binding ..., RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}` for two-way template bindings — `{TemplateBinding}` is one-way only in Avalonia.
 - **OnApplyTemplate pattern**: Controls find named template parts via `e.NameScope.Find<T>("PART_Name")` in `OnApplyTemplate`. Always detach old event handlers before attaching new ones, since `OnApplyTemplate` can be called multiple times.
+- **Pseudo-classes**: State-based styling uses `PseudoClasses.Set(":stateName", condition)`, `PseudoClasses.Add(":state")`, `PseudoClasses.Remove(":state")` — e.g. `:error`, `:expanded`, `:hasContent`, `:horizontal`, `:vertical`.
 
 ### Theme System
 

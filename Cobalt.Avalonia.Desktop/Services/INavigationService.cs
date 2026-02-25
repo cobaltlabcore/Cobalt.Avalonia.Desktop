@@ -18,7 +18,8 @@ public interface INavigationService
     /// Navigates to the specified page Control.
     /// </summary>
     /// <param name="page">The page Control to navigate to (with DataContext already set).</param>
-    Task NavigateToAsync(Control page);
+    /// <param name="parameter">Optional parameter to pass to the page's <see cref="INavigationViewModel.OnAppearingAsync"/>.</param>
+    Task NavigateToAsync(Control page, object? parameter = null);
 
     /// <summary>
     /// Gets the collection of main navigation items displayed in the primary navigation area.

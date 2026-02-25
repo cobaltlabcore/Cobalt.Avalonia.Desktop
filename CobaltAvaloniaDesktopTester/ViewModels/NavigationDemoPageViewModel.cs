@@ -130,7 +130,7 @@ public class NavigationDemoPageViewModel : ObservableObject, INavigationViewMode
         return result == DialogResult.Primary;
     }
 
-    public Task OnAppearingAsync()
+    public Task OnAppearingAsync(object? parameter = null)
     {
         return Task.CompletedTask;
     }

@@ -19,5 +19,5 @@ public interface INavigationViewModel
     /// Called when the page has appeared and is now visible.
     /// This is invoked AFTER the CurrentPage property changes.
     /// </summary>
-    Task OnAppearingAsync();
+    Task OnAppearingAsync(object? parameter = null);
 }

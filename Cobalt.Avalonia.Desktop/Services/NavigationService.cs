@@ -77,7 +77,8 @@ public class NavigationService : ObservableObject, INavigationService
     /// Navigates to the specified page Control.
     /// </summary>
     /// <param name="page">The page Control to navigate to (with DataContext already set).</param>
-    public async Task NavigateToAsync(Control page)
+    /// <param name="parameter">The parameter passed to the navigation request.</param>
+    public async Task NavigateToAsync(Control page, object? parameter = null)
     {
         if (!await _navigationLock.WaitAsync(0))
             return;
@@ -95,7 +96,7 @@ public class NavigationService : ObservableObject, INavigationService
 
             SelectedItem = FindItemForPage(page);
 
-            await InvokeAppearingAsync(page);
+            await InvokeAppearingAsync(page, parameter);
         }
         finally
         {
@@ -154,7 +155,7 @@ public class NavigationService : ObservableObject, INavigationService
             CurrentPage = targetItem is not null ? PageFactory(targetItem) : null;
 
             if (CurrentPage is not null)
-                await InvokeAppearingAsync(CurrentPage);
+                await InvokeAppearingAsync(CurrentPage, null);
         }
         finally
         {
@@ -185,12 +186,13 @@ public class NavigationService : ObservableObject, INavigationService
     /// Invokes the <see cref="INavigationViewModel.OnAppearingAsync"/> method on the ViewModel if it implements the interface.
     /// </summary>
     /// <param name="page">The current page Control.</param>
-    private static async Task InvokeAppearingAsync(Control page)
+    /// <param name="parameter">The parameter passed to the navigation request.</param>
+    private static async Task InvokeAppearingAsync(Control page, object? parameter)
     {
         try
         {
             if (page.DataContext is INavigationViewModel nav)
-                await nav.OnAppearingAsync();
+                await nav.OnAppearingAsync(parameter);
         }
         catch
         {
