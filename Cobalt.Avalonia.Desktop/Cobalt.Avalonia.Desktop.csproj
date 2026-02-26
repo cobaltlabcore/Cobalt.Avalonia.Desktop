@@ -1,12 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <Authors>Cobalt team</Authors>
+    <Copyright>Copyright © 2026 Cobalt team</Copyright>
+    <PackageId>Cobalt.Avalonia.Desktop</PackageId>
+    <Title>Cobalt Avalonia Desktop Controls</Title>
+    <Version>0.1.0</Version>
+    <Description>A comprehensive Avalonia UI control library for .NET desktop applications. Includes navigation, docking, ribbon, editors, calendar/scheduling, and 2D display controls, along with a CollectionView data subsystem and dialog/overlay services. Built on Avalonia 11.3 with Fluent theme (Dark &amp; Light variants), full MVVM support, and dependency injection integration.</Description>
+    <PackageTags>avalonia;controls;desktop;navigation;docking;ribbon;editors;mvvm;fluent;ui;dialog;settings;collectionview;overlay;infobar</PackageTags>
+    <RepositoryUrl>https://github.com/cobaltlabcore/Cobalt.Avalonia</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.12" />
