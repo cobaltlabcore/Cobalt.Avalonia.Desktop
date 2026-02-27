@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Threading;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Editors;
 
@@ -71,6 +73,14 @@ public class BaseEditor : TextBox
         {
             editor.PseudoClasses.Set(":error", editor.HasValidationError);
         });
+    }
+
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        base.OnGotFocus(e);
+
+        if (!AcceptsReturn)
+            Dispatcher.UIThread.Post(SelectAll);
     }
 
     protected override void UpdateDataValidation(AvaloniaProperty property, BindingValueType state, Exception? error)
