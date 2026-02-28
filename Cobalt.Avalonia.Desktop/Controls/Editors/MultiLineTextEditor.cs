@@ -7,6 +7,7 @@ public class MultiLineTextEditor : BaseEditor
     public MultiLineTextEditor()
     {
         AcceptsReturn = true;
+        SelectAllTextOnFocus = false;
         TextWrapping = global::Avalonia.Media.TextWrapping.Wrap;
     }
 }

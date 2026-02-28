@@ -26,6 +26,9 @@ public class BaseEditor : TextBox
     public static readonly StyledProperty<string?> ValidationErrorMessageProperty =
         AvaloniaProperty.Register<BaseEditor, string?>(nameof(ValidationErrorMessage));
 
+    public static readonly StyledProperty<bool> SelectAllTextOnFocusProperty =
+        AvaloniaProperty.Register<BaseEditor, bool>(nameof(SelectAllTextOnFocus), defaultValue: true);
+
     public string? Title
     {
         get => GetValue(TitleProperty);
@@ -62,6 +65,12 @@ public class BaseEditor : TextBox
         set => SetValue(ValidationErrorMessageProperty, value);
     }
 
+    public bool SelectAllTextOnFocus
+    {
+        get => GetValue(SelectAllTextOnFocusProperty);
+        set => SetValue(SelectAllTextOnFocusProperty, value);
+    }
+
     private string? _parseError;
     private string? _bindingError;
 
@@ -79,7 +88,7 @@ public class BaseEditor : TextBox
     {
         base.OnGotFocus(e);
 
-        if (!AcceptsReturn)
+        if (SelectAllTextOnFocus)
             Dispatcher.UIThread.Post(SelectAll);
     }
 

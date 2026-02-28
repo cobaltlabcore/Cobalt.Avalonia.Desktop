@@ -56,7 +56,7 @@ Layout model classes for serialisation: `DockPaneModel`, `DockTabGroupModel`, `D
 
 ### Editors
 
-All editors inherit from `BaseEditor` and support `Title`, `Unit`, `ActionContent`, `HasValidationError`, and `ValidationErrorMessage`.
+All editors inherit from `BaseEditor` and support `Title`, `Unit`, `ActionContent`, `SelectAllTextOnFocus` (default `true`), `HasValidationError`, and `ValidationErrorMessage`.
 
 **Numeric Editors** (with `Value`, `Minimum`, `Maximum`, `Increment`, `FormatString`):
 
@@ -149,13 +149,9 @@ Page ViewModels can implement `INavigationViewModel` for lifecycle hooks:
 
 ### 1. Add Package Reference
 
-```xml
-<ItemGroup>
-  <ProjectReference Include="..\Cobalt.Avalonia.Desktop\Cobalt.Avalonia.Desktop.csproj" />
-</ItemGroup>
+```bash
+dotnet add package Cobalt.Avalonia.Desktop
 ```
-
-*(Or add as NuGet package once published)*
 
 ### 2. Include Theme Resources
 
@@ -573,11 +569,3 @@ dotnet run --project CobaltAvaloniaDesktopTester
 ```
 
 The tester application (`CobaltAvaloniaDesktopTester`) provides live examples and a testing playground for all controls.
-
-## License
-
-[Add your license information here]
-
-## Contributing
-
-[Add contributing guidelines here]
