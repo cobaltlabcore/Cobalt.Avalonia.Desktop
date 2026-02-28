@@ -16,12 +16,15 @@ internal sealed class Displayer2DCanvas : Control
     /// <summary>Gets or sets the <see cref="Displayer2D"/> that owns this canvas.</summary>
     internal Displayer2D? Owner { get; set; }
 
+    /// <summary>Initializes a new <see cref="Displayer2DCanvas"/> and subscribes to pointer events for hover tracking.</summary>
     public Displayer2DCanvas()
     {
         PointerMoved += OnPointerMoved;
         PointerExited += OnPointerExited;
     }
 
+    /// <summary>Renders the background image and all visible <see cref="DrawingObject"/> instances sorted by <see cref="DrawingObject.ZIndex"/>.</summary>
+    /// <param name="context">The drawing context to render into.</param>
     public override void Render(DrawingContext context)
     {
         base.Render(context);
@@ -63,12 +66,18 @@ internal sealed class Displayer2DCanvas : Control
         }
     }
 
+    /// <summary>Updates the world mouse position and hover state when the pointer moves over the canvas.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The pointer event data.</param>
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
         var pos = e.GetPosition(this);
         UpdateHoverState(pos);
     }
 
+    /// <summary>Clears the hover state for all shapes and resets the cursor when the pointer leaves the canvas.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The pointer event data.</param>
     private void OnPointerExited(object? sender, PointerEventArgs e)
     {
         // Clear hover state for shapes but keep WorldMousePosition updating
@@ -98,6 +107,11 @@ internal sealed class Displayer2DCanvas : Control
         Cursor = null;
     }
 
+    /// <summary>
+    /// Updates <see cref="Displayer2D.WorldMousePosition"/> and the <see cref="Shapes.Shape.IsHovered"/> flag for each shape,
+    /// then refreshes the cursor to reflect the topmost hovered shape's <see cref="Shapes.Shape.Cursor"/>.
+    /// </summary>
+    /// <param name="pos">The current canvas-space pointer position, or <see langword="null"/> if unavailable.</param>
     private void UpdateHoverState(global::Avalonia.Point? pos)
     {
         if (Owner is null) return;

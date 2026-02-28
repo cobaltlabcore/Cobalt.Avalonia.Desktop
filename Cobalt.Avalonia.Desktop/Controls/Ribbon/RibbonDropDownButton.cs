@@ -14,6 +14,7 @@ namespace Cobalt.Avalonia.Desktop.Controls.Ribbon;
 /// </summary>
 public class RibbonDropDownButton : TemplatedControl
 {
+    /// <summary>The <c>PART_Popup</c> template part used to show the drop-down menu.</summary>
     private Popup? _popup;
 
     /// <summary>Defines the <see cref="Header"/> property.</summary>
@@ -63,6 +64,8 @@ public class RibbonDropDownButton : TemplatedControl
         _popup = e.NameScope.Find<Popup>("PART_Popup");
     }
 
+    /// <summary>Applies the <c>:pressed</c> pseudo-class and toggles the drop-down on pointer press.</summary>
+    /// <param name="e">The pointer pressed event data.</param>
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
@@ -71,12 +74,16 @@ public class RibbonDropDownButton : TemplatedControl
         e.Handled = true;
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when the pointer is released.</summary>
+    /// <param name="e">The pointer released event data.</param>
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
         PseudoClasses.Remove(":pressed");
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when pointer capture is lost.</summary>
+    /// <param name="e">The pointer capture lost event data.</param>
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);

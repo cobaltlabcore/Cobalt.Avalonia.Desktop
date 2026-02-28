@@ -15,12 +15,25 @@ namespace Cobalt.Avalonia.Desktop.Controls.CalendarSchedule;
 /// </summary>
 public class CalendarSchedule : TemplatedControl
 {
+    /// <summary>The pixel height of each one-hour row in the week view grid.</summary>
     private const double HourHeight = 60.0;
+
+    /// <summary>The minimum pointer movement (in pixels) required before a drag gesture is recognized.</summary>
     private const double DragThreshold = 5.0;
+
+    /// <summary>The number of pixels at the top and bottom of an appointment border that activate resize mode.</summary>
     private const double ResizeZonePixels = 6.0;
+
+    /// <summary>The snap interval in minutes applied to appointment start and end times during drag operations.</summary>
     private const double SnapMinutes = 15.0;
+
+    /// <summary>The minimum appointment duration in minutes enforced during resize operations.</summary>
     private const double MinDurationMinutes = 15.0;
+
+    /// <summary>The size of the auto-scroll activation zone in pixels near the top and bottom of the scroll viewer.</summary>
     private const double AutoScrollZonePixels = 30.0;
+
+    /// <summary>The number of pixels to scroll per frame when the pointer is within the auto-scroll zone.</summary>
     private const double AutoScrollStep = 20.0;
 
     /// <summary>Raised when an appointment is moved to a new time or day via drag interaction in the week view.</summary>
@@ -29,20 +42,41 @@ public class CalendarSchedule : TemplatedControl
     /// <summary>Raised when an appointment's start or end time is changed via drag-resize in the week view.</summary>
     public event EventHandler<CalendarScheduleItemChangedEventArgs>? ItemResized;
 
+    /// <summary>Holds transient state for an in-progress appointment drag or resize gesture.</summary>
     private sealed class ScheduleDragSession
     {
+        /// <summary>Whether this session is moving or resizing the appointment.</summary>
         public ScheduleInteractionMode Mode;
+
+        /// <summary>The appointment being interacted with.</summary>
         public CalendarScheduleItem Item = null!;
+
+        /// <summary>The <see cref="Border"/> visual representing the appointment.</summary>
         public Border Border = null!;
+
+        /// <summary>The appointment's start time at the beginning of the drag, used to revert on cancel.</summary>
         public DateTimeOffset OriginalStart;
+
+        /// <summary>The appointment's end time at the beginning of the drag, used to revert on cancel.</summary>
         public DateTimeOffset OriginalEnd;
+
+        /// <summary>The grid-space pointer position when the drag was initiated, used to detect threshold.</summary>
         public Point StartPointerPosition;
+
+        /// <summary>The vertical offset from the top of the appointment border to the pointer, used to keep the grab point stable during a move.</summary>
         public double PointerToTopOffset;
+
+        /// <summary>The semi-transparent ghost border placed at the original position during a drag, or <see langword="null"/> before threshold is exceeded.</summary>
         public Border? Ghost;
+
+        /// <summary>Whether the pointer has moved beyond <see cref="DragThreshold"/> pixels from the starting position.</summary>
         public bool ThresholdExceeded;
+
+        /// <summary>The 0-based day column index of the appointment at the start of the drag.</summary>
         public int OriginalDayIndex;
     }
 
+    /// <summary>The active drag or resize session, or <see langword="null"/> when no gesture is in progress.</summary>
     private ScheduleDragSession? _dragSession;
 
     /// <summary>Defines the <see cref="DisplayDate"/> property.</summary>
@@ -124,37 +158,72 @@ public class CalendarSchedule : TemplatedControl
     }
 
     // Template parts - Header
+    /// <summary>The <c>PART_PreviousButton</c> that navigates to the previous month or week.</summary>
     private Button? _previousButton;
+
+    /// <summary>The <c>PART_NextButton</c> that navigates to the next month or week.</summary>
     private Button? _nextButton;
+
+    /// <summary>The <c>PART_TodayButton</c> that navigates to today's date.</summary>
     private Button? _todayButton;
+
+    /// <summary>The <c>PART_HeaderTitle</c> text block showing the current month or week range.</summary>
     private TextBlock? _headerTitle;
+
+    /// <summary>The <c>PART_WeekButton</c> that switches to the week view.</summary>
     private Button? _weekButton;
+
+    /// <summary>The <c>PART_MonthButton</c> that switches to the month view.</summary>
     private Button? _monthButton;
 
     // Template parts - Mini Calendar
+    /// <summary>The <c>PART_MiniCalPrevButton</c> that navigates the mini calendar one month back.</summary>
     private Button? _miniCalPrevButton;
+
+    /// <summary>The <c>PART_MiniCalNextButton</c> that navigates the mini calendar one month forward.</summary>
     private Button? _miniCalNextButton;
+
+    /// <summary>The <c>PART_MiniCalTitle</c> text block showing the mini calendar's current month and year.</summary>
     private TextBlock? _miniCalTitle;
+
+    /// <summary>The <c>PART_MiniCalGrid</c> containing the mini calendar's day buttons.</summary>
     private Grid? _miniCalGrid;
 
     // Template parts - Month View
+    /// <summary>The <c>PART_MonthViewDayHeaders</c> grid showing abbreviated day-of-week names.</summary>
     private Grid? _monthViewDayHeaders;
+
+    /// <summary>The <c>PART_MonthViewGrid</c> containing the 6×7 month cell borders.</summary>
     private Grid? _monthViewGrid;
 
     // Template parts - Week View
+    /// <summary>The <c>PART_WeekViewDayHeaders</c> grid showing the 7 day-of-week column headers.</summary>
     private Grid? _weekViewDayHeaders;
+
+    /// <summary>The <c>PART_WeekViewScrollViewer</c> that enables vertical scrolling through the 24-hour time grid.</summary>
     private ScrollViewer? _weekViewScrollViewer;
+
+    /// <summary>The <c>PART_WeekViewTimeGrid</c> containing time labels, grid lines, and appointment borders.</summary>
     private Grid? _weekViewTimeGrid;
 
     // Template parts - View containers
+    /// <summary>The <c>PART_MonthView</c> container that is shown when <see cref="ViewMode"/> is <see cref="CalendarViewMode.Month"/>.</summary>
     private Control? _monthView;
+
+    /// <summary>The <c>PART_WeekView</c> container that is shown when <see cref="ViewMode"/> is <see cref="CalendarViewMode.Week"/>.</summary>
     private Control? _weekView;
 
+    /// <summary>The month currently displayed in the mini calendar sidebar, which can differ from <see cref="DisplayDate"/>.</summary>
     private DateTimeOffset _miniCalDisplayMonth;
+
+    /// <summary>Whether the initial scroll-to-8am has been performed for the current week view build.</summary>
     private bool _initialScrollDone;
 
+    /// <summary>Tracks all rendered appointment borders together with their data items and base brush for selection highlighting.</summary>
     private readonly List<(Border border, CalendarScheduleItem item, IBrush baseBrush)> _appointmentBorders = new();
 
+    /// <summary>Finds all template parts, wires button click and pointer events, then performs an initial calendar build.</summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -213,6 +282,8 @@ public class CalendarSchedule : TemplatedControl
         Rebuild();
     }
 
+    /// <summary>Responds to property changes by rebuilding the view, updating pseudo-classes, or refreshing appointment selection.</summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -246,12 +317,14 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Sets the <c>:week</c> and <c>:month</c> pseudo-classes to reflect the current <see cref="ViewMode"/>.</summary>
     private void UpdatePseudoClasses()
     {
         PseudoClasses.Set(":week", ViewMode == CalendarViewMode.Week);
         PseudoClasses.Set(":month", ViewMode == CalendarViewMode.Month);
     }
 
+    /// <summary>Advances <see cref="DisplayDate"/> by one month in month view, or one week in week view.</summary>
     private void NavigatePrevious()
     {
         DisplayDate = ViewMode == CalendarViewMode.Month
@@ -259,6 +332,7 @@ public class CalendarSchedule : TemplatedControl
             : DisplayDate.AddDays(-7);
     }
 
+    /// <summary>Advances <see cref="DisplayDate"/> by one month in month view, or one week in week view.</summary>
     private void NavigateNext()
     {
         DisplayDate = ViewMode == CalendarViewMode.Month
@@ -266,18 +340,22 @@ public class CalendarSchedule : TemplatedControl
             : DisplayDate.AddDays(7);
     }
 
+    /// <summary>Sets <see cref="DisplayDate"/> and <see cref="SelectedDate"/> to today.</summary>
     private void NavigateToday()
     {
         DisplayDate = DateTimeOffset.Now;
         SelectedDate = DateTimeOffset.Now;
     }
 
+    /// <summary>Advances the mini calendar's display month by <paramref name="monthDelta"/> months and refreshes it.</summary>
+    /// <param name="monthDelta">The number of months to move (positive for forward, negative for backward).</param>
     private void MiniCalNavigate(int monthDelta)
     {
         _miniCalDisplayMonth = _miniCalDisplayMonth.AddMonths(monthDelta);
         UpdateMiniCalendar();
     }
 
+    /// <summary>Clears and rebuilds the header, mini calendar, and the active month or week view.</summary>
     private void Rebuild()
     {
         if (_headerTitle == null) return;
@@ -293,6 +371,7 @@ public class CalendarSchedule : TemplatedControl
             UpdateWeekView();
     }
 
+    /// <summary>Updates the header title text to reflect the current <see cref="ViewMode"/> and <see cref="DisplayDate"/>.</summary>
     private void UpdateHeader()
     {
         if (_headerTitle == null) return;
@@ -314,6 +393,7 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Rebuilds the mini calendar grid to show day buttons for <see cref="_miniCalDisplayMonth"/>.</summary>
     private void UpdateMiniCalendar()
     {
         if (_miniCalGrid == null || _miniCalTitle == null) return;
@@ -390,6 +470,7 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Rebuilds the month view grid with day headers and a 6×7 cell layout for <see cref="DisplayDate"/>'s month.</summary>
     private void UpdateMonthView()
     {
         if (_monthViewDayHeaders == null || _monthViewGrid == null) return;
@@ -520,6 +601,7 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Rebuilds the week view with day headers, a 24-hour time grid, and appointment borders for <see cref="DisplayDate"/>'s week.</summary>
     private void UpdateWeekView()
     {
         if (_weekViewDayHeaders == null || _weekViewTimeGrid == null) return;
@@ -722,6 +804,16 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Attaches hover, selection, and (in week view) drag/resize pointer event handlers to an appointment border.
+    /// Also tracks the border in <see cref="_appointmentBorders"/> for later selection highlighting.
+    /// </summary>
+    /// <param name="border">The appointment border to configure.</param>
+    /// <param name="item">The calendar item represented by the border.</param>
+    /// <param name="isWeekView">
+    /// <see langword="true"/> to attach week-view drag and resize gestures;
+    /// <see langword="false"/> for a simple selection click in month view.
+    /// </param>
     private void SetupAppointmentInteraction(Border border, CalendarScheduleItem item, bool isWeekView = false)
     {
         var baseBrush = border.Background ?? GetBrush("CobaltCalendarAppointmentBrush");
@@ -811,6 +903,7 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Updates the border highlight on all tracked appointment borders to reflect the current <see cref="SelectedItem"/>.</summary>
     private void UpdateAppointmentSelection()
     {
         foreach (var (border, item, _) in _appointmentBorders)
@@ -823,6 +916,9 @@ public class CalendarSchedule : TemplatedControl
 
     // --- Drag / Resize helpers ---
 
+    /// <summary>Converts a vertical pixel position within the week grid to a <see cref="TimeSpan"/> clamped to [0, 24] hours.</summary>
+    /// <param name="y">The Y coordinate in week-grid space.</param>
+    /// <returns>The corresponding time of day.</returns>
     private TimeSpan PointerYToTime(double y)
     {
         double hours = y / HourHeight;
@@ -830,6 +926,9 @@ public class CalendarSchedule : TemplatedControl
         return TimeSpan.FromHours(hours);
     }
 
+    /// <summary>Rounds <paramref name="time"/> to the nearest <see cref="SnapMinutes"/> interval, clamped to [0, 24 h].</summary>
+    /// <param name="time">The raw time span to snap.</param>
+    /// <returns>The snapped time span.</returns>
     private static TimeSpan SnapToInterval(TimeSpan time)
     {
         int totalMinutes = (int)Math.Round(time.TotalMinutes / SnapMinutes) * (int)SnapMinutes;
@@ -837,6 +936,9 @@ public class CalendarSchedule : TemplatedControl
         return TimeSpan.FromMinutes(totalMinutes);
     }
 
+    /// <summary>Converts a horizontal pixel position within the week grid to a 0-based day column index (0 = leftmost day).</summary>
+    /// <param name="x">The X coordinate in week-grid space.</param>
+    /// <returns>The day column index clamped to [0, 6].</returns>
     private int PointerXToDayIndex(double x)
     {
         if (_weekViewTimeGrid == null) return 0;
@@ -854,6 +956,11 @@ public class CalendarSchedule : TemplatedControl
         return Math.Clamp(index, 0, 6);
     }
 
+    /// <summary>Updates the grid column, row, margin, and height of an appointment border to match new time and day values.</summary>
+    /// <param name="border">The appointment border to reposition.</param>
+    /// <param name="start">The new start time of day.</param>
+    /// <param name="end">The new end time of day.</param>
+    /// <param name="dayIndex">The 0-based day column index (0 = first day of the week).</param>
     private void RepositionAppointmentBorder(Border border, TimeSpan start, TimeSpan end, int dayIndex)
     {
         double topOffset = start.TotalHours * HourHeight;
@@ -868,6 +975,8 @@ public class CalendarSchedule : TemplatedControl
         border.Height = height;
     }
 
+    /// <summary>Creates a semi-transparent ghost border at the appointment's original position and adds it to the week grid.</summary>
+    /// <param name="session">The active drag session.</param>
     private void CreateDragGhost(ScheduleDragSession session)
     {
         if (session.Ghost != null || _weekViewTimeGrid == null) return;
@@ -896,6 +1005,8 @@ public class CalendarSchedule : TemplatedControl
         session.Ghost = ghost;
     }
 
+    /// <summary>Removes the ghost border from the week grid and clears <see cref="ScheduleDragSession.Ghost"/>.</summary>
+    /// <param name="session">The active drag session.</param>
     private void RemoveDragGhost(ScheduleDragSession session)
     {
         if (session.Ghost != null && _weekViewTimeGrid != null)
@@ -905,6 +1016,7 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Aborts the active drag session, restoring the appointment's original times and visual position.</summary>
     private void CancelDrag()
     {
         if (_dragSession == null) return;
@@ -928,6 +1040,9 @@ public class CalendarSchedule : TemplatedControl
         Cursor = Cursor.Default;
     }
 
+    /// <summary>Updates the time range text block inside an appointment border to reflect the item's current start and end times.</summary>
+    /// <param name="border">The appointment border whose content to refresh.</param>
+    /// <param name="item">The calendar item with the updated times.</param>
     private static void RefreshAppointmentContent(Border border, CalendarScheduleItem item)
     {
         if (border.Child is StackPanel panel && panel.Children.Count >= 2 &&
@@ -951,6 +1066,9 @@ public class CalendarSchedule : TemplatedControl
 
     // --- Week grid pointer event handlers ---
 
+    /// <summary>Clears the selected item when the pointer is pressed on empty week-grid space (no appointment drag was started).</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The pointer pressed event data.</param>
     private void OnWeekGridPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         // If no drag session was started by an appointment border, this is a click on empty space
@@ -958,6 +1076,9 @@ public class CalendarSchedule : TemplatedControl
             SelectedItem = null;
     }
 
+    /// <summary>Drives the active drag or resize session, updating the appointment's position or duration and auto-scrolling as needed.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The pointer event data.</param>
     private void OnWeekGridPointerMoved(object? sender, PointerEventArgs e)
     {
         if (_dragSession == null || _weekViewTimeGrid == null) return;
@@ -1072,6 +1193,9 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Commits the drag or resize operation and raises <see cref="ItemMoved"/> or <see cref="ItemResized"/> if the threshold was exceeded.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The pointer released event data.</param>
     private void OnWeekGridPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (_dragSession == null) return;
@@ -1102,11 +1226,17 @@ public class CalendarSchedule : TemplatedControl
             ItemResized?.Invoke(this, args);
     }
 
+    /// <summary>Cancels the active drag session when pointer capture is lost unexpectedly.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The capture lost event data.</param>
     private void OnWeekGridPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
         CancelDrag();
     }
 
+    /// <summary>Cancels the active drag session when the Escape key is pressed.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The key event data.</param>
     private void OnScheduleKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape && _dragSession != null)
@@ -1116,12 +1246,18 @@ public class CalendarSchedule : TemplatedControl
         }
     }
 
+    /// <summary>Returns the <see cref="DateTimeOffset"/> of the first day of the week containing <paramref name="date"/>, based on <see cref="FirstDayOfWeek"/>.</summary>
+    /// <param name="date">The reference date.</param>
+    /// <returns>Midnight on the first day of the containing week.</returns>
     private DateTimeOffset GetWeekStart(DateTimeOffset date)
     {
         int diff = (((int)date.DayOfWeek - (int)FirstDayOfWeek) + 7) % 7;
         return date.AddDays(-diff).Date;
     }
 
+    /// <summary>Looks up a theme brush by resource key, returning <see cref="Brushes.Gray"/> as a fallback if not found.</summary>
+    /// <param name="resourceKey">The resource key of the brush (e.g. <c>"CobaltAccentBrush"</c>).</param>
+    /// <returns>The resolved <see cref="IBrush"/>.</returns>
     private IBrush GetBrush(string resourceKey)
     {
         if (this.TryFindResource(resourceKey, ActualThemeVariant, out var resource) && resource is IBrush brush)

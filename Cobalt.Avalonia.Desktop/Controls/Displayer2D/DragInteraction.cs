@@ -11,9 +11,14 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D;
 /// </summary>
 public sealed class DragInteraction : UserInteraction
 {
+    /// <summary>The shape currently being dragged, or <see langword="null"/> when no drag is active.</summary>
     private Shape? _dragging;
+
+    /// <summary>The canvas-space pointer position recorded during the last move event, used to compute per-frame deltas.</summary>
     private Point _lastPos;
 
+    /// <summary>Starts panning on middle-button press, or begins dragging the topmost movable shape under the left-button press position.</summary>
+    /// <param name="e">The pointer pressed event data.</param>
     public override void OnMouseDown(PointerPressedEventArgs e)
     {
         var props = e.GetCurrentPoint(null).Properties;
@@ -37,6 +42,8 @@ public sealed class DragInteraction : UserInteraction
         }
     }
 
+    /// <summary>Continues any active pan and translates the dragged shape by the pointer delta divided by the current zoom.</summary>
+    /// <param name="e">The pointer moved event data.</param>
     public override void OnMouseMove(PointerEventArgs e)
     {
         Pan_OnMouseMove(e);
@@ -49,16 +56,26 @@ public sealed class DragInteraction : UserInteraction
         _lastPos = pos;
     }
 
+    /// <summary>Ends the active drag and stops any pan gesture.</summary>
+    /// <param name="e">The pointer released event data.</param>
     public override void OnMouseUp(PointerReleasedEventArgs e)
     {
         _dragging = null;
         StopPan_OnMouseUp(e);
     }
 
+    /// <inheritdoc/>
     public override void OnMouseWheel(PointerWheelEventArgs e) => Zoom_OnMouseWheel(e);
 
+    /// <inheritdoc/>
     public override void OnMouseDoubleClick(TappedEventArgs e) => ZoomToFit_OnMouseDoubleClick(e);
 
+    /// <summary>
+    /// Finds the movable <see cref="Shape"/> with the highest <see cref="DrawingObject.ZIndex"/>
+    /// that passes a hit-test at <paramref name="canvasPoint"/>.
+    /// </summary>
+    /// <param name="canvasPoint">The canvas-space point to test.</param>
+    /// <returns>The best candidate shape, or <see langword="null"/> if none is found.</returns>
     private Shape? FindDraggable(Point canvasPoint)
     {
         if (Owner is null) return null;

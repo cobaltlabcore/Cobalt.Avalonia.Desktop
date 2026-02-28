@@ -10,13 +10,25 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Groups;
 /// </summary>
 public sealed class LineMovingObjectGroup : DrawingObjectGroup
 {
+    /// <summary>The height (in world units) of the invisible rectangle hitbox that covers the line body.</summary>
     private const double HitboxThickness = 20.0;
 
+    /// <summary>The visible line shape rendered between the two endpoints.</summary>
     private readonly LineShape _line;
+
+    /// <summary>The visible circle rendered at the first endpoint.</summary>
     private readonly CircleShape _point1;
+
+    /// <summary>The visible circle rendered at the second endpoint.</summary>
     private readonly CircleShape _point2;
+
+    /// <summary>The invisible rectangle hitbox used to drag both endpoints simultaneously.</summary>
     private readonly RectangleShape _hitbox;
+
+    /// <summary>The invisible circle hitbox used to drag the first endpoint independently.</summary>
     private readonly CircleShape _point1Hitbox;
+
+    /// <summary>The invisible circle hitbox used to drag the second endpoint independently.</summary>
     private readonly CircleShape _point2Hitbox;
 
     /// <summary>Gets or sets the stroke brush of the line.</summary>
@@ -150,11 +162,17 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         _hitbox.Rotation = angle;
     }
 
+    /// <summary>Recalculates all coordinates when an endpoint hitbox is moved.</summary>
+    /// <param name="sender">The endpoint hitbox that was moved.</param>
+    /// <param name="e">The move event data.</param>
     private void OnPointMoved(object? sender, MovedEventArgs e)
     {
         RecalculateCoordinates();
     }
 
+    /// <summary>Translates both endpoint hitboxes by the drag delta, then recalculates all coordinates.</summary>
+    /// <param name="sender">The body hitbox that was moved.</param>
+    /// <param name="e">The move event data.</param>
     private void OnHitboxMoved(object? sender, MovedEventArgs e)
     {
         _point1Hitbox.CenterX += e.DeltaX;

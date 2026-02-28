@@ -87,6 +87,7 @@ public class InfoBar : ContentControl
             closeButton.Click += OnCloseButtonClick;
     }
 
+    /// <summary>Handles the close button click by calling <see cref="Close"/>.</summary>
     private void OnCloseButtonClick(object? sender, RoutedEventArgs e)
     {
         Close();

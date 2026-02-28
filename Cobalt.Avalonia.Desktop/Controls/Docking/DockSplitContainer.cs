@@ -11,9 +11,16 @@ namespace Cobalt.Avalonia.Desktop.Controls.Docking;
 /// </summary>
 public class DockSplitContainer : TemplatedControl
 {
+    /// <summary>The <c>PART_Grid</c> template part whose column or row definitions are reconfigured on orientation change.</summary>
     private Grid? _grid;
+
+    /// <summary>The <c>PART_First</c> ContentControl that hosts the first child.</summary>
     private ContentControl? _first;
+
+    /// <summary>The <c>PART_Splitter</c> GridSplitter that allows the user to resize the two children.</summary>
     private GridSplitter? _splitter;
+
+    /// <summary>The <c>PART_Second</c> ContentControl that hosts the second child.</summary>
     private ContentControl? _second;
 
     /// <summary>Defines the <see cref="First"/> property.</summary>
@@ -109,6 +116,10 @@ public class DockSplitContainer : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Rebuilds the grid's column or row definitions and repositions all template parts
+    /// based on the current <see cref="Orientation"/>, <see cref="FirstSize"/>, and <see cref="SecondSize"/>.
+    /// </summary>
     private void ConfigureLayout()
     {
         if (_grid == null || _first == null || _splitter == null || _second == null)
@@ -165,6 +176,7 @@ public class DockSplitContainer : TemplatedControl
         }
     }
 
+    /// <summary>Sets the <c>:horizontal</c> and <c>:vertical</c> pseudo-classes to reflect the current <see cref="Orientation"/>.</summary>
     private void UpdatePseudoClasses()
     {
         PseudoClasses.Set(":horizontal", Orientation == Orientation.Horizontal);

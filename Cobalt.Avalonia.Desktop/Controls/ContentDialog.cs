@@ -32,6 +32,7 @@ public enum DialogResult
 /// </summary>
 public class ContentDialog : ContentControl
 {
+    /// <summary>The <c>PART_Overlay</c> border used to detect clicks outside the dialog card, closing it with <see cref="DialogResult.None"/>.</summary>
     private Border? _overlayPart;
 
     /// <summary>Defines the <see cref="Title"/> property.</summary>
@@ -248,6 +249,8 @@ public class ContentDialog : ContentControl
         }
     }
 
+    /// <summary>Closes the dialog with <see cref="DialogResult.None"/> when the Escape key is pressed while the dialog is open.</summary>
+    /// <param name="e">The key event data.</param>
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
@@ -259,29 +262,35 @@ public class ContentDialog : ContentControl
         }
     }
 
+    /// <summary>Closes the dialog with <see cref="DialogResult.None"/> when the overlay background is clicked.</summary>
     private void OnOverlayPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         CloseDialog(DialogResult.None);
     }
 
+    /// <summary>Executes <see cref="PrimaryButtonCommand"/> and closes the dialog with <see cref="DialogResult.Primary"/>.</summary>
     private void OnPrimaryButtonClick(object? sender, RoutedEventArgs e)
     {
         PrimaryButtonCommand?.Execute(null);
         CloseDialog(DialogResult.Primary);
     }
 
+    /// <summary>Executes <see cref="SecondaryButtonCommand"/> and closes the dialog with <see cref="DialogResult.Secondary"/>.</summary>
     private void OnSecondaryButtonClick(object? sender, RoutedEventArgs e)
     {
         SecondaryButtonCommand?.Execute(null);
         CloseDialog(DialogResult.Secondary);
     }
 
+    /// <summary>Executes <see cref="CloseButtonCommand"/> and closes the dialog with <see cref="DialogResult.Close"/>.</summary>
     private void OnCloseButtonClick(object? sender, RoutedEventArgs e)
     {
         CloseButtonCommand?.Execute(null);
         CloseDialog(DialogResult.Close);
     }
 
+    /// <summary>Sets <see cref="DialogResult"/>, closes the dialog, and raises the <see cref="Closed"/> event.</summary>
+    /// <param name="result">The result to report.</param>
     private void CloseDialog(DialogResult result)
     {
         DialogResult = result;

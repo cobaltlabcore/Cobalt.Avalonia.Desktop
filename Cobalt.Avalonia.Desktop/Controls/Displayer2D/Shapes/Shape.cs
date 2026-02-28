@@ -63,11 +63,19 @@ public abstract class Shape : DrawingObject
     /// <summary>Gets or sets the cursor displayed when the pointer hovers over this shape.</summary>
     public Cursor? Cursor { get; set; }
 
+    /// <summary>Gets or sets a value indicating whether the pointer is currently over this shape. Managed by <see cref="Displayer2DCanvas"/>.</summary>
     internal bool IsHovered { get; set; }
 
+    /// <summary>Returns <see cref="FillHover"/> when hovered and set; otherwise returns <see cref="Fill"/>.</summary>
     protected IBrush? EffectiveFill => IsHovered && FillHover is not null ? FillHover : Fill;
+
+    /// <summary>Returns <see cref="StrokeHover"/> when hovered and set; otherwise returns <see cref="Stroke"/>.</summary>
     protected IBrush? EffectiveStroke => IsHovered && StrokeHover is not null ? StrokeHover : Stroke;
 
+    /// <summary>
+    /// Builds a <see cref="IPen"/> from <see cref="EffectiveStroke"/>, <see cref="StrokeThickness"/>, and <see cref="StrokeDashArray"/>.
+    /// Returns <see langword="null"/> when there is no effective stroke.
+    /// </summary>
     protected IPen? BuildPen()
     {
         if (EffectiveStroke is null) return null;

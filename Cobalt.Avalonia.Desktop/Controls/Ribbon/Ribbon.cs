@@ -13,6 +13,7 @@ namespace Cobalt.Avalonia.Desktop.Controls.Ribbon;
 /// </summary>
 public class Ribbon : TemplatedControl
 {
+    /// <summary>The <c>PART_TabStrip</c> ListBox used to display the tab headers.</summary>
     private ListBox? _tabStrip;
 
     /// <summary>Initializes a new instance of <see cref="Ribbon"/> and wires the visual-tree attachment handler.</summary>
@@ -79,6 +80,10 @@ public class Ribbon : TemplatedControl
             SelectedTab = Tabs[0];
     }
 
+    /// <summary>
+    /// Synchronizes <see cref="SelectedTab"/> with the tab strip and keeps <see cref="SelectedIndex"/> in sync when either property changes.
+    /// </summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -106,12 +111,17 @@ public class Ribbon : TemplatedControl
         }
     }
 
+    /// <summary>Updates <see cref="SelectedTab"/> when the tab strip selection changes.</summary>
     private void OnTabStripSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_tabStrip?.SelectedItem is RibbonTab tab)
             SelectedTab = tab;
     }
 
+    /// <summary>
+    /// Forces the tab strip selection to re-sync after the control is attached to the visual tree,
+    /// ensuring bindings have been evaluated before updating the selection.
+    /// </summary>
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         // Force sync after being attached to visual tree

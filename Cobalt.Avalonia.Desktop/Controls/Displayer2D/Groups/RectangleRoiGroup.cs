@@ -11,21 +11,49 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Groups;
 /// </summary>
 public sealed class RectangleRoiGroup : DrawingObjectGroup
 {
+    /// <summary>The visible rotated rectangle that outlines the ROI.</summary>
     private readonly RectangleShape _rect;
+
+    /// <summary>The decorative dashed line drawn along the spine (A to B).</summary>
     private readonly LineShape _spineLine;
+
+    /// <summary>The invisible hitbox covering the full rectangle body, used to translate the entire ROI.</summary>
     private readonly RectangleShape _bodyHitbox;
 
+    /// <summary>The visible circle rendered at spine endpoint A.</summary>
     private readonly CircleShape _pointAHandle;
+
+    /// <summary>The invisible circle hitbox used to drag spine endpoint A independently.</summary>
     private readonly CircleShape _pointAHitbox;
+
+    /// <summary>The visible circle rendered at spine endpoint B.</summary>
     private readonly CircleShape _pointBHandle;
+
+    /// <summary>The invisible circle hitbox used to drag spine endpoint B independently.</summary>
     private readonly CircleShape _pointBHitbox;
 
+    /// <summary>The two visible circles rendered at the perpendicular width edges of the rectangle (ZIndex 4).</summary>
     private readonly CircleShape[] _widthHandles  = new CircleShape[2]; // ZIndex 4, visible
+
+    /// <summary>The two invisible circle hitboxes used to drag the width handles (ZIndex 5).</summary>
     private readonly CircleShape[] _widthHitboxes = new CircleShape[2]; // ZIndex 5, invisible + IsMovable
+
+    /// <summary>Cached per-index event handlers for width hitbox <see cref="Shapes.Shape.Moved"/> events, stored to allow unsubscription.</summary>
     private readonly EventHandler<MovedEventArgs>[] _widthMovedHandlers = new EventHandler<MovedEventArgs>[2];
 
-    private double _pointAX, _pointAY;
-    private double _pointBX, _pointBY;
+    /// <summary>World-space X coordinate of spine endpoint A.</summary>
+    private double _pointAX;
+
+    /// <summary>World-space Y coordinate of spine endpoint A.</summary>
+    private double _pointAY;
+
+    /// <summary>World-space X coordinate of spine endpoint B.</summary>
+    private double _pointBX;
+
+    /// <summary>World-space Y coordinate of spine endpoint B.</summary>
+    private double _pointBY;
+
+    /// <summary>Half the width of the rectangle, measured perpendicularly to the spine in world units.</summary>
     private double _halfWidth;
 
     /// <summary>Initializes a new <see cref="RectangleRoiGroup"/> with the given spine endpoints and half-width.</summary>
@@ -240,6 +268,9 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         _widthHitboxes[1].CenterY = centerY - _halfWidth * perpY;
     }
 
+    /// <summary>Translates both spine endpoints by the drag delta, then recalculates all coordinates.</summary>
+    /// <param name="sender">The body hitbox that was moved.</param>
+    /// <param name="e">The move event data.</param>
     private void OnBodyHitboxMoved(object? sender, MovedEventArgs e)
     {
         _pointAX += e.DeltaX;
@@ -249,6 +280,9 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         RecalculateCoordinates();
     }
 
+    /// <summary>Moves spine endpoint A by the drag delta, then recalculates all coordinates.</summary>
+    /// <param name="sender">The endpoint A hitbox that was moved.</param>
+    /// <param name="e">The move event data.</param>
     private void OnPointAHitboxMoved(object? sender, MovedEventArgs e)
     {
         _pointAX += e.DeltaX;
@@ -256,6 +290,9 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         RecalculateCoordinates();
     }
 
+    /// <summary>Moves spine endpoint B by the drag delta, then recalculates all coordinates.</summary>
+    /// <param name="sender">The endpoint B hitbox that was moved.</param>
+    /// <param name="e">The move event data.</param>
     private void OnPointBHitboxMoved(object? sender, MovedEventArgs e)
     {
         _pointBX += e.DeltaX;
@@ -263,6 +300,12 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         RecalculateCoordinates();
     }
 
+    /// <summary>
+    /// Projects the drag delta onto the perpendicular axis and adjusts <c>_halfWidth</c> accordingly,
+    /// then recalculates all coordinates.
+    /// </summary>
+    /// <param name="index">0 for the positive-perpendicular handle, 1 for the negative-perpendicular handle.</param>
+    /// <param name="e">The move event data.</param>
     private void OnWidthHitboxMoved(int index, MovedEventArgs e)
     {
         var dx = _pointBX - _pointAX;

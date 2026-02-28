@@ -69,12 +69,16 @@ public class RibbonButton : TemplatedControl
         }
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when the pointer is released.</summary>
+    /// <param name="e">The pointer released event data.</param>
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
         PseudoClasses.Remove(":pressed");
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when pointer capture is lost.</summary>
+    /// <param name="e">The pointer capture lost event data.</param>
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);

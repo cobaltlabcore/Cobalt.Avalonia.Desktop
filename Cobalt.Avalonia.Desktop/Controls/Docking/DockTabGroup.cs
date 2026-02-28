@@ -43,10 +43,19 @@ public class DockTabGroupEventArgs : EventArgs
 /// </summary>
 public class DockTabGroup : TemplatedControl
 {
+    /// <summary>The <c>PART_TabStrip</c> ListBox used to display the tab headers.</summary>
     private ListBox? _tabStrip;
+
+    /// <summary>The canvas-space position where the pointer was pressed at the start of a potential drag.</summary>
     private Point _dragStartPoint;
+
+    /// <summary>The pane identified as a drag candidate when the pointer is pressed but has not yet exceeded the drag threshold.</summary>
     private DockPane? _dragCandidate;
+
+    /// <summary>Indicates whether a drag operation is currently in progress.</summary>
     private bool _isDragging;
+
+    /// <summary>Minimum pointer displacement in pixels required to trigger a drag operation.</summary>
     private const double DragThreshold = 5.0;
 
     /// <summary>Gets the collection of panes displayed as tabs in this group.</summary>
@@ -118,12 +127,17 @@ public class DockTabGroup : TemplatedControl
         }
     }
 
+    /// <summary>Updates <see cref="SelectedPane"/> when the tab strip selection changes.</summary>
     private void OnTabStripSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (_tabStrip?.SelectedItem is DockPane pane)
             SelectedPane = pane;
     }
 
+    /// <summary>
+    /// Handles pointer press on the tab strip. Detects close-button clicks and starts tracking
+    /// a potential drag operation for movable panes.
+    /// </summary>
     private void OnTabStripPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _isDragging = false;
@@ -155,6 +169,10 @@ public class DockTabGroup : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Handles pointer movement over the tab strip. Fires <see cref="PaneDragStarted"/> once the
+    /// pointer has moved beyond <see cref="DragThreshold"/> pixels from the press position.
+    /// </summary>
     private void OnTabStripPointerMoved(object? sender, PointerEventArgs e)
     {
         if (_dragCandidate == null || _isDragging)
@@ -172,6 +190,7 @@ public class DockTabGroup : TemplatedControl
         }
     }
 
+    /// <summary>Clears the drag candidate and drag state when the pointer is released.</summary>
     private void OnTabStripPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _dragCandidate = null;

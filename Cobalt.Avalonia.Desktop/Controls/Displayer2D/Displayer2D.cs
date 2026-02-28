@@ -142,8 +142,13 @@ public class Displayer2D : TemplatedControl
         ZoomToFit(new Rect(0, 0, bgImage.Size.Width, bgImage.Size.Height), padding);
     }
 
+    /// <summary>The internal canvas used to render drawing objects and handle hover state.</summary>
     private Displayer2DCanvas? _canvas;
 
+    /// <summary>
+    /// Finds the <c>PART_Canvas</c> template part, wires pointer and keyboard events, and invalidates the canvas.
+    /// </summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -180,6 +185,12 @@ public class Displayer2D : TemplatedControl
         InvalidateCanvas();
     }
 
+    /// <summary>
+    /// Subscribes or unsubscribes collection and property change listeners when <see cref="DrawingObjects"/>,
+    /// <see cref="DrawingObjectGroups"/>, <see cref="UserInteraction"/>, <see cref="BackgroundImage"/>,
+    /// <see cref="ZoomFactor"/>, <see cref="PanX"/>, or <see cref="PanY"/> changes, then invalidates the canvas.
+    /// </summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -244,6 +255,9 @@ public class Displayer2D : TemplatedControl
         }
     }
 
+    /// <summary>Wires or unwires <see cref="OnDrawingObjectPropertyChanged"/> for added or removed objects, then invalidates the canvas.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The collection change details.</param>
     private void OnDrawingObjectsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.OldItems != null)
@@ -261,6 +275,9 @@ public class Displayer2D : TemplatedControl
         InvalidateCanvas();
     }
 
+    /// <summary>Wires or unwires property change listeners for added or removed groups and their items, then invalidates the canvas.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The collection change details.</param>
     private void OnGroupsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.OldItems != null)
@@ -286,11 +303,17 @@ public class Displayer2D : TemplatedControl
         InvalidateCanvas();
     }
 
+    /// <summary>Invalidates the canvas when any property of a drawing object changes.</summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The property change details.</param>
     private void OnDrawingObjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         InvalidateCanvas();
     }
 
+    /// <summary>Notifies the active <see cref="UserInteraction"/> of the new render size after layout.</summary>
+    /// <param name="finalSize">The final size allocated to this control.</param>
+    /// <returns>The size used by this control.</returns>
     protected override Size ArrangeOverride(Size finalSize)
     {
         var result = base.ArrangeOverride(finalSize);
@@ -298,29 +321,37 @@ public class Displayer2D : TemplatedControl
         return result;
     }
 
+    /// <summary>Forwards pointer pressed events to the active <see cref="UserInteraction"/>.</summary>
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e) =>
         UserInteraction?.OnMouseDown(e);
 
+    /// <summary>Forwards pointer released events to the active <see cref="UserInteraction"/>.</summary>
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e) =>
         UserInteraction?.OnMouseUp(e);
 
+    /// <summary>Forwards pointer moved events to the active <see cref="UserInteraction"/>.</summary>
     private void OnPointerMoved(object? sender, PointerEventArgs e) =>
         UserInteraction?.OnMouseMove(e);
 
+    /// <summary>Forwards pointer wheel events to the active <see cref="UserInteraction"/>.</summary>
     private void OnPointerWheelChanged(object? sender, PointerWheelEventArgs e) =>
         UserInteraction?.OnMouseWheel(e);
 
+    /// <summary>Forwards double-tap events to the active <see cref="UserInteraction"/>.</summary>
     private void OnDoubleTapped(object? sender, TappedEventArgs e) =>
         UserInteraction?.OnMouseDoubleClick(e);
 
+    /// <summary>Forwards key down events to the active <see cref="UserInteraction"/>.</summary>
     private void OnKeyDown(object? sender, KeyEventArgs e) =>
         UserInteraction?.OnKeyDown(e);
 
+    /// <summary>Forwards key up events to the active <see cref="UserInteraction"/>.</summary>
     private void OnKeyUp(object? sender, KeyEventArgs e) =>
         UserInteraction?.OnKeyUp(e);
 
     /// <summary>Forces a repaint of the canvas.</summary>
     public void Refresh() => _canvas?.InvalidateVisual();
 
+    /// <summary>Requests a redraw of the internal canvas.</summary>
     private void InvalidateCanvas() => _canvas?.InvalidateVisual();
 }

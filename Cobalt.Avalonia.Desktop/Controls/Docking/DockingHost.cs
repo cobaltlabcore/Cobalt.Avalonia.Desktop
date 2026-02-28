@@ -17,9 +17,16 @@ namespace Cobalt.Avalonia.Desktop.Controls.Docking;
 /// </summary>
 public class DockingHost : TemplatedControl
 {
+    /// <summary>The <c>PART_RootHost</c> ContentControl that holds the root of the docking layout tree.</summary>
     private ContentControl? _rootHost;
+
+    /// <summary>The <c>PART_DropOverlay</c> border displayed as a visual hint for the current drop target zone.</summary>
     private Border? _dropOverlay;
+
+    /// <summary>The <c>PART_RootPanel</c> Panel used to capture global pointer events during a drag operation.</summary>
     private Panel? _rootPanel;
+
+    /// <summary>The active drag session, or <see langword="null"/> when no drag is in progress.</summary>
     private DockDragSession? _dragSession;
 
     /// <summary>Gets the flat list of <see cref="DockPane"/> instances declared as content children.</summary>
@@ -94,6 +101,7 @@ public class DockingHost : TemplatedControl
         WireAllGroups(root);
     }
 
+    /// <summary>Builds the visual layout tree from the current <see cref="LayoutRoot"/> model and sets it as the root content.</summary>
     private void BuildLayoutFromModel()
     {
         if (_rootHost == null || LayoutRoot == null)
@@ -107,6 +115,9 @@ public class DockingHost : TemplatedControl
         }
     }
 
+    /// <summary>Recursively converts a <see cref="DockLayoutNode"/> model into the corresponding visual control.</summary>
+    /// <param name="node">The model node to convert.</param>
+    /// <returns>The visual control, or <see langword="null"/> for unrecognised node types.</returns>
     private Control? BuildVisualTree(DockLayoutNode node)
     {
         return node switch
@@ -118,6 +129,9 @@ public class DockingHost : TemplatedControl
         };
     }
 
+    /// <summary>Creates a <see cref="DockPane"/> from the given <see cref="DockPaneModel"/>.</summary>
+    /// <param name="model">The pane model to convert.</param>
+    /// <returns>A new <see cref="DockPane"/> populated with model data.</returns>
     private DockPane BuildPane(DockPaneModel model)
     {
         return new DockPane
@@ -129,6 +143,9 @@ public class DockingHost : TemplatedControl
         };
     }
 
+    /// <summary>Creates a <see cref="DockTabGroup"/> from the given <see cref="DockTabGroupModel"/>, building each pane and setting the initial selection.</summary>
+    /// <param name="model">The tab group model to convert.</param>
+    /// <returns>A new <see cref="DockTabGroup"/> populated with model data.</returns>
     private DockTabGroup BuildTabGroup(DockTabGroupModel model)
     {
         var group = new DockTabGroup();
@@ -145,6 +162,9 @@ public class DockingHost : TemplatedControl
         return group;
     }
 
+    /// <summary>Creates a <see cref="DockSplitContainer"/> from the given <see cref="DockSplitModel"/>, recursively building each child.</summary>
+    /// <param name="model">The split model to convert.</param>
+    /// <returns>A new <see cref="DockSplitContainer"/> populated with model data.</returns>
     private DockSplitContainer BuildSplit(DockSplitModel model)
     {
         var split = new DockSplitContainer
@@ -163,6 +183,10 @@ public class DockingHost : TemplatedControl
         return split;
     }
 
+    /// <summary>
+    /// Initializes the root layout from the model (if set), falls back to a single tab group containing all <see cref="Panes"/>,
+    /// or wires existing content when layout was set programmatically before the template was applied.
+    /// </summary>
     private void InitializeLayout()
     {
         if (_rootHost == null)
@@ -195,6 +219,8 @@ public class DockingHost : TemplatedControl
         _rootHost.Content = group;
     }
 
+    /// <summary>Recursively traverses the layout tree and wires drag and close events on every <see cref="DockTabGroup"/>.</summary>
+    /// <param name="control">The root control to start traversal from.</param>
     private void WireAllGroups(Control? control)
     {
         if (control is DockTabGroup group)
@@ -210,18 +236,23 @@ public class DockingHost : TemplatedControl
         }
     }
 
+    /// <summary>Subscribes to drag and close events on the given <see cref="DockTabGroup"/>.</summary>
+    /// <param name="group">The group to wire.</param>
     private void WireGroup(DockTabGroup group)
     {
         group.PaneDragStarted += OnPaneDragStarted;
         group.PaneCloseRequested += OnPaneCloseRequested;
     }
 
+    /// <summary>Unsubscribes drag and close events from the given <see cref="DockTabGroup"/>.</summary>
+    /// <param name="group">The group to unwire.</param>
     private void UnwireGroup(DockTabGroup group)
     {
         group.PaneDragStarted -= OnPaneDragStarted;
         group.PaneCloseRequested -= OnPaneCloseRequested;
     }
 
+    /// <summary>Starts a drag session when a pane tab is dragged beyond the drag threshold.</summary>
     private void OnPaneDragStarted(object? sender, DockTabGroupEventArgs e)
     {
         if (_rootPanel == null || _dropOverlay == null)
@@ -233,6 +264,10 @@ public class DockingHost : TemplatedControl
         e.Pointer?.Capture(_rootPanel);
     }
 
+    /// <summary>
+    /// Handles pointer movement during a drag session. Hit-tests tab groups, determines the drop zone,
+    /// and repositions the drop overlay indicator.
+    /// </summary>
     private void OnRootPointerMoved(object? sender, PointerEventArgs e)
     {
         if (_dragSession == null || _dropOverlay == null || _rootPanel == null)
@@ -268,6 +303,7 @@ public class DockingHost : TemplatedControl
         ShowDropOverlay(groupTopLeft.Value, groupBounds.Width, groupBounds.Height, zone);
     }
 
+    /// <summary>Finalises a drag session on pointer release, executing the drop if a valid target group is present.</summary>
     private void OnRootPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (_dragSession == null)
@@ -288,6 +324,14 @@ public class DockingHost : TemplatedControl
         ExecuteDrop(session);
     }
 
+    /// <summary>
+    /// Determines the <see cref="DockPosition"/> based on how far <paramref name="relativePos"/> is from the
+    /// edges of the target group. The outer 25 % of each edge maps to a directional zone; the centre maps to <see cref="DockPosition.Center"/>.
+    /// </summary>
+    /// <param name="relativePos">The pointer position relative to the target group's top-left corner.</param>
+    /// <param name="width">The width of the target group in canvas pixels.</param>
+    /// <param name="height">The height of the target group in canvas pixels.</param>
+    /// <returns>The <see cref="DockPosition"/> for the current pointer location.</returns>
     private DockPosition DetermineDropZone(Point relativePos, double width, double height)
     {
         double edgeBand = 0.25;
@@ -309,6 +353,11 @@ public class DockingHost : TemplatedControl
         return DockPosition.Center;
     }
 
+    /// <summary>Positions and shows the drop overlay to cover the half of the target group corresponding to <paramref name="zone"/>.</summary>
+    /// <param name="groupOrigin">The top-left corner of the target group in root-panel space.</param>
+    /// <param name="groupWidth">The width of the target group.</param>
+    /// <param name="groupHeight">The height of the target group.</param>
+    /// <param name="zone">The current drop zone that determines which half is highlighted.</param>
     private void ShowDropOverlay(Point groupOrigin, double groupWidth, double groupHeight, DockPosition zone)
     {
         if (_dropOverlay == null)
@@ -343,6 +392,11 @@ public class DockingHost : TemplatedControl
         _dropOverlay.IsVisible = true;
     }
 
+    /// <summary>
+    /// Executes the pending drop: moves <paramref name="session"/>.Pane from its source group to the target,
+    /// either adding it as a tab (center drop) or splitting the target group (directional drop).
+    /// </summary>
+    /// <param name="session">The completed drag session containing pane, source, target, and position.</param>
     private void ExecuteDrop(DockDragSession session)
     {
         var pane = session.Pane;
@@ -387,6 +441,10 @@ public class DockingHost : TemplatedControl
             CollapseEmptyGroup(sourceGroup);
     }
 
+    /// <summary>
+    /// Splits <paramref name="targetGroup"/> by inserting a new <see cref="DockTabGroup"/> containing <paramref name="pane"/>
+    /// on the side indicated by <paramref name="position"/>, wrapping both in a new <see cref="DockSplitContainer"/>.
+    /// </summary>
     private void SplitGroup(DockTabGroup targetGroup, DockPane pane, DockPosition position)
     {
         if (_rootHost == null)
@@ -419,6 +477,10 @@ public class DockingHost : TemplatedControl
         ReplaceInParent(targetGroup, split);
     }
 
+    /// <summary>
+    /// Removes an empty <see cref="DockTabGroup"/> from the layout tree. If it was the root content it is simply cleared;
+    /// otherwise the parent <see cref="DockSplitContainer"/> is replaced by its surviving child.
+    /// </summary>
     private void CollapseEmptyGroup(DockTabGroup emptyGroup)
     {
         if (_rootHost == null)
@@ -456,6 +518,7 @@ public class DockingHost : TemplatedControl
         ReplaceInParent(parent, survivor);
     }
 
+    /// <summary>Replaces <paramref name="target"/> with <paramref name="replacement"/> in the layout tree, either at the root or inside its parent split container.</summary>
     private void ReplaceInParent(Control target, Control replacement)
     {
         if (_rootHost == null)
@@ -477,6 +540,9 @@ public class DockingHost : TemplatedControl
             parent.Second = replacement;
     }
 
+    /// <summary>Finds the <see cref="DockSplitContainer"/> that directly contains <paramref name="child"/> in the layout tree.</summary>
+    /// <param name="child">The control whose parent split container is sought.</param>
+    /// <returns>The parent <see cref="DockSplitContainer"/>, or <see langword="null"/> if not found.</returns>
     private DockSplitContainer? FindParentSplit(Control child)
     {
         if (_rootHost?.Content is not Control root)
@@ -485,6 +551,10 @@ public class DockingHost : TemplatedControl
         return FindParentSplitRecursive(root, child);
     }
 
+    /// <summary>Recursively searches the layout tree for the <see cref="DockSplitContainer"/> that directly contains <paramref name="target"/>.</summary>
+    /// <param name="current">The current node being examined.</param>
+    /// <param name="target">The control to find a parent for.</param>
+    /// <returns>The containing split container, or <see langword="null"/> if not found.</returns>
     private DockSplitContainer? FindParentSplitRecursive(Control current, Control target)
     {
         if (current is DockSplitContainer split)
@@ -508,6 +578,8 @@ public class DockingHost : TemplatedControl
         return null;
     }
 
+    /// <summary>Returns the <see cref="DockTabGroup"/> whose bounds contain <paramref name="position"/> in root-panel space, or <see langword="null"/> if none.</summary>
+    /// <param name="position">The position in root-panel space to test.</param>
     private DockTabGroup? HitTestTabGroup(Point position)
     {
         if (_rootPanel == null)
@@ -529,6 +601,7 @@ public class DockingHost : TemplatedControl
         return null;
     }
 
+    /// <summary>Recursively collects all <see cref="DockTabGroup"/> instances in the layout tree into <paramref name="groups"/>.</summary>
     private void CollectTabGroups(Control? control, List<DockTabGroup> groups)
     {
         if (control is DockTabGroup group)
@@ -578,6 +651,7 @@ public class DockingHost : TemplatedControl
         }
     }
 
+    /// <summary>Handles a close request from a tab group by forwarding to <see cref="ClosePane"/>.</summary>
     private void OnPaneCloseRequested(object? sender, DockTabGroupEventArgs e)
     {
         ClosePane(e.Pane);

@@ -13,6 +13,7 @@ namespace Cobalt.Avalonia.Desktop.Controls;
 /// </summary>
 public class SettingsCardExpander : TemplatedControl
 {
+    /// <summary>The <c>PART_Header</c> border used to detect clicks on the card header.</summary>
     private Border? _headerBorder;
 
     /// <summary>Defines the <see cref="Header"/> property.</summary>
@@ -86,6 +87,10 @@ public class SettingsCardExpander : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Finds the <c>PART_Header</c> template part and wires pointer events to handle expand/collapse.
+    /// </summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -107,6 +112,7 @@ public class SettingsCardExpander : TemplatedControl
         }
     }
 
+    /// <summary>Applies the <c>:pressed</c> pseudo-class and toggles <see cref="IsExpanded"/> when the header is pressed.</summary>
     private void OnHeaderPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         PseudoClasses.Add(":pressed");
@@ -114,11 +120,13 @@ public class SettingsCardExpander : TemplatedControl
         e.Handled = true;
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when the pointer is released over the header.</summary>
     private void OnHeaderPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         PseudoClasses.Remove(":pressed");
     }
 
+    /// <summary>Removes the <c>:pressed</c> pseudo-class when pointer capture is lost from the header.</summary>
     private void OnHeaderPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
         PseudoClasses.Remove(":pressed");
