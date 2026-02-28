@@ -4,6 +4,11 @@ using Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D;
 
+/// <summary>
+/// A <see cref="UserInteraction"/> that supports dragging movable <see cref="Shape"/> objects with the left
+/// mouse button, panning with the middle button, zooming with the scroll wheel, and fitting to the background
+/// image on double-click.
+/// </summary>
 public sealed class DragInteraction : UserInteraction
 {
     private Shape? _dragging;

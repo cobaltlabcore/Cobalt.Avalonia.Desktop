@@ -6,8 +6,14 @@ using Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D;
 
+/// <summary>
+/// Internal rendering surface used by <see cref="Displayer2D"/>.
+/// Renders the background image and all visible <see cref="DrawingObject"/> instances sorted by
+/// <see cref="DrawingObject.ZIndex"/>, and maintains hover state for <see cref="Shape"/> instances.
+/// </summary>
 internal sealed class Displayer2DCanvas : Control
 {
+    /// <summary>Gets or sets the <see cref="Displayer2D"/> that owns this canvas.</summary>
     internal Displayer2D? Owner { get; set; }
 
     public Displayer2DCanvas()

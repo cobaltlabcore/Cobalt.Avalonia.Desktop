@@ -9,6 +9,10 @@ using System.Globalization;
 
 namespace Cobalt.Avalonia.Desktop.Controls.CalendarSchedule;
 
+/// <summary>
+/// A calendar control that displays appointments in either a month grid or a 7-day week view with hourly time slots.
+/// Supports interactive drag-to-move and drag-to-resize of appointments in the week view.
+/// </summary>
 public class CalendarSchedule : TemplatedControl
 {
     private const double HourHeight = 60.0;
@@ -19,7 +23,10 @@ public class CalendarSchedule : TemplatedControl
     private const double AutoScrollZonePixels = 30.0;
     private const double AutoScrollStep = 20.0;
 
+    /// <summary>Raised when an appointment is moved to a new time or day via drag interaction in the week view.</summary>
     public event EventHandler<CalendarScheduleItemChangedEventArgs>? ItemMoved;
+
+    /// <summary>Raised when an appointment's start or end time is changed via drag-resize in the week view.</summary>
     public event EventHandler<CalendarScheduleItemChangedEventArgs>? ItemResized;
 
     private sealed class ScheduleDragSession
@@ -38,66 +45,78 @@ public class CalendarSchedule : TemplatedControl
 
     private ScheduleDragSession? _dragSession;
 
+    /// <summary>Defines the <see cref="DisplayDate"/> property.</summary>
     public static readonly StyledProperty<DateTimeOffset> DisplayDateProperty =
         AvaloniaProperty.Register<CalendarSchedule, DateTimeOffset>(
             nameof(DisplayDate),
             DateTimeOffset.Now,
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="ViewMode"/> property.</summary>
     public static readonly StyledProperty<CalendarViewMode> ViewModeProperty =
         AvaloniaProperty.Register<CalendarSchedule, CalendarViewMode>(
             nameof(ViewMode),
             CalendarViewMode.Month,
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="Items"/> property.</summary>
     public static readonly StyledProperty<IEnumerable<CalendarScheduleItem>?> ItemsProperty =
         AvaloniaProperty.Register<CalendarSchedule, IEnumerable<CalendarScheduleItem>?>(nameof(Items));
 
+    /// <summary>Defines the <see cref="SelectedDate"/> property.</summary>
     public static readonly StyledProperty<DateTimeOffset?> SelectedDateProperty =
         AvaloniaProperty.Register<CalendarSchedule, DateTimeOffset?>(
             nameof(SelectedDate),
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="SelectedItem"/> property.</summary>
     public static readonly StyledProperty<CalendarScheduleItem?> SelectedItemProperty =
         AvaloniaProperty.Register<CalendarSchedule, CalendarScheduleItem?>(
             nameof(SelectedItem),
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="FirstDayOfWeek"/> property.</summary>
     public static readonly StyledProperty<DayOfWeek> FirstDayOfWeekProperty =
         AvaloniaProperty.Register<CalendarSchedule, DayOfWeek>(
             nameof(FirstDayOfWeek),
             DayOfWeek.Monday);
 
+    /// <summary>Gets or sets the date that determines which month or week is currently displayed.</summary>
     public DateTimeOffset DisplayDate
     {
         get => GetValue(DisplayDateProperty);
         set => SetValue(DisplayDateProperty, value);
     }
 
+    /// <summary>Gets or sets whether the calendar shows a month grid or a week time-slot view.</summary>
     public CalendarViewMode ViewMode
     {
         get => GetValue(ViewModeProperty);
         set => SetValue(ViewModeProperty, value);
     }
 
+    /// <summary>Gets or sets the collection of appointments to display.</summary>
     public IEnumerable<CalendarScheduleItem>? Items
     {
         get => GetValue(ItemsProperty);
         set => SetValue(ItemsProperty, value);
     }
 
+    /// <summary>Gets or sets the currently selected date, highlighted in both the main view and the mini calendar.</summary>
     public DateTimeOffset? SelectedDate
     {
         get => GetValue(SelectedDateProperty);
         set => SetValue(SelectedDateProperty, value);
     }
 
+    /// <summary>Gets or sets the currently selected appointment.</summary>
     public CalendarScheduleItem? SelectedItem
     {
         get => GetValue(SelectedItemProperty);
         set => SetValue(SelectedItemProperty, value);
     }
 
+    /// <summary>Gets or sets the day of the week shown in the leftmost column of the calendar grid.</summary>
     public DayOfWeek FirstDayOfWeek
     {
         get => GetValue(FirstDayOfWeekProperty);

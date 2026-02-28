@@ -7,41 +7,55 @@ using Avalonia.Metadata;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Ribbon;
 
+/// <summary>
+/// A ribbon control that displays a set of <see cref="RibbonTab"/> instances in a tab strip,
+/// each containing groups of commands.
+/// </summary>
 public class Ribbon : TemplatedControl
 {
     private ListBox? _tabStrip;
 
+    /// <summary>Initializes a new instance of <see cref="Ribbon"/> and wires the visual-tree attachment handler.</summary>
     public Ribbon()
     {
         AttachedToVisualTree += OnAttachedToVisualTree;
     }
 
+    /// <summary>Gets the collection of tabs displayed in this ribbon.</summary>
     [Content]
     public AvaloniaList<RibbonTab> Tabs { get; } = new();
 
+    /// <summary>Defines the <see cref="SelectedTab"/> property.</summary>
     public static readonly StyledProperty<RibbonTab?> SelectedTabProperty =
         AvaloniaProperty.Register<Ribbon, RibbonTab?>(
             nameof(SelectedTab),
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="SelectedIndex"/> property.</summary>
     public static readonly StyledProperty<int> SelectedIndexProperty =
         AvaloniaProperty.Register<Ribbon, int>(
             nameof(SelectedIndex),
             defaultValue: 0,
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Gets or sets the currently selected tab.</summary>
     public RibbonTab? SelectedTab
     {
         get => GetValue(SelectedTabProperty);
         set => SetValue(SelectedTabProperty, value);
     }
 
+    /// <summary>Gets or sets the zero-based index of the currently selected tab.</summary>
     public int SelectedIndex
     {
         get => GetValue(SelectedIndexProperty);
         set => SetValue(SelectedIndexProperty, value);
     }
 
+    /// <summary>
+    /// Finds <c>PART_TabStrip</c>, wires selection change, and selects the first tab if none is selected.
+    /// </summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);

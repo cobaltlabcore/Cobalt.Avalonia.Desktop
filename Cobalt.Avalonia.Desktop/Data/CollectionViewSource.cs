@@ -5,11 +5,18 @@ using Avalonia.Collections;
 
 namespace Cobalt.Avalonia.Desktop.Data;
 
+/// <summary>
+/// An <see cref="AvaloniaObject"/> that wraps a source collection in a <see cref="CollectionView"/>,
+/// exposing bindable <see cref="SortDescriptions"/>, <see cref="GroupDescriptions"/>, and a
+/// <see cref="Filter"/> event. The <see cref="View"/> property provides the live view for binding.
+/// </summary>
 public class CollectionViewSource : AvaloniaObject
 {
+    /// <summary>Defines the <see cref="Source"/> styled property.</summary>
     public static readonly StyledProperty<IEnumerable?> SourceProperty =
         AvaloniaProperty.Register<CollectionViewSource, IEnumerable?>(nameof(Source));
 
+    /// <summary>Defines the <see cref="View"/> direct property.</summary>
     public static readonly DirectProperty<CollectionViewSource, CollectionView?> ViewProperty =
         AvaloniaProperty.RegisterDirect<CollectionViewSource, CollectionView?>(
             nameof(View),
@@ -17,6 +24,10 @@ public class CollectionViewSource : AvaloniaObject
 
     private CollectionView? _view;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="CollectionViewSource"/> and subscribes to
+    /// changes on <see cref="SortDescriptions"/> and <see cref="GroupDescriptions"/>.
+    /// </summary>
     public CollectionViewSource()
     {
         SortDescriptions.CollectionChanged += OnSortDescriptionsCollectionChanged;
@@ -28,18 +39,29 @@ public class CollectionViewSource : AvaloniaObject
         SourceProperty.Changed.AddClassHandler<CollectionViewSource>((s, _) => s.OnSourceChanged());
     }
 
+    /// <summary>
+    /// Raised for each item when the view is refreshed, allowing handlers to accept or reject
+    /// individual items by setting <see cref="FilterEventArgs.Accepted"/>.
+    /// </summary>
     public event EventHandler<FilterEventArgs>? Filter;
 
+    /// <summary>Gets or sets the source collection to wrap. Changing this property rebuilds the <see cref="View"/>.</summary>
     public IEnumerable? Source
     {
         get => GetValue(SourceProperty);
         set => SetValue(SourceProperty, value);
     }
 
+    /// <summary>
+    /// Gets the current <see cref="CollectionView"/> built from <see cref="Source"/>,
+    /// or <see langword="null"/> if <see cref="Source"/> is <see langword="null"/>.
+    /// </summary>
     public CollectionView? View => _view;
 
+    /// <summary>Gets the list of sort criteria applied to the view.</summary>
     public AvaloniaList<SortDescription> SortDescriptions { get; } = new();
 
+    /// <summary>Gets the list of group descriptions applied to the view.</summary>
     public AvaloniaList<PropertyGroupDescription> GroupDescriptions { get; } = new();
 
     private void OnSourceChanged()

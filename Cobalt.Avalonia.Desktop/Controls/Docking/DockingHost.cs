@@ -10,6 +10,11 @@ using Avalonia;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Docking;
 
+/// <summary>
+/// A templated control that hosts a tree of <see cref="DockTabGroup"/> and
+/// <see cref="DockSplitContainer"/> controls, and manages drag-and-drop re-docking
+/// of <see cref="DockPane"/> instances within the layout.
+/// </summary>
 public class DockingHost : TemplatedControl
 {
     private ContentControl? _rootHost;
@@ -17,18 +22,26 @@ public class DockingHost : TemplatedControl
     private Panel? _rootPanel;
     private DockDragSession? _dragSession;
 
+    /// <summary>Gets the flat list of <see cref="DockPane"/> instances declared as content children.</summary>
     [Content]
     public AvaloniaList<DockPane> Panes { get; } = new();
 
+    /// <summary>Defines the <see cref="LayoutRoot"/> property.</summary>
     public static readonly StyledProperty<DockLayoutNode?> LayoutRootProperty =
         AvaloniaProperty.Register<DockingHost, DockLayoutNode?>(nameof(LayoutRoot));
 
+    /// <summary>Gets or sets the root layout model node used to build the docking UI declaratively.</summary>
     public DockLayoutNode? LayoutRoot
     {
         get => GetValue(LayoutRootProperty);
         set => SetValue(LayoutRootProperty, value);
     }
 
+    /// <summary>
+    /// Finds template parts <c>PART_RootHost</c>, <c>PART_DropOverlay</c>, and <c>PART_RootPanel</c>,
+    /// wires global pointer events for drag-and-drop, then initializes the layout.
+    /// </summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -52,6 +65,10 @@ public class DockingHost : TemplatedControl
         InitializeLayout();
     }
 
+    /// <summary>
+    /// Rebuilds the visual layout tree from the model when <see cref="LayoutRoot"/> changes.
+    /// </summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -62,6 +79,12 @@ public class DockingHost : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Sets the root of the docking layout tree to the given control and wires all
+    /// contained <see cref="DockTabGroup"/> instances.
+    /// </summary>
+    /// <param name="root">The control to use as the root of the layout.</param>
+    /// <exception cref="InvalidOperationException">Thrown if called before the control template has been applied.</exception>
     public void SetRootLayout(Control root)
     {
         if (_rootHost == null)
@@ -521,6 +544,10 @@ public class DockingHost : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Finds the group containing the given pane, removes it, and collapses the group if it becomes empty.
+    /// </summary>
+    /// <param name="pane">The pane to close.</param>
     public void ClosePane(DockPane pane)
     {
         if (_rootHost?.Content == null)
@@ -556,13 +583,26 @@ public class DockingHost : TemplatedControl
         ClosePane(e.Pane);
     }
 
+    /// <summary>Encapsulates the state of an in-progress pane drag operation within the docking host.</summary>
     private class DockDragSession
     {
+        /// <summary>Gets the pane being dragged.</summary>
         public DockPane Pane { get; }
+
+        /// <summary>Gets the group from which the pane originated.</summary>
         public DockTabGroup SourceGroup { get; }
+
+        /// <summary>Gets or sets the group currently under the pointer, or <see langword="null"/> if none.</summary>
         public DockTabGroup? TargetGroup { get; set; }
+
+        /// <summary>Gets or sets the drop position relative to the target group.</summary>
         public DockPosition TargetPosition { get; set; } = DockPosition.Center;
 
+        /// <summary>
+        /// Initializes a new drag session for the given pane and source group.
+        /// </summary>
+        /// <param name="pane">The pane being dragged.</param>
+        /// <param name="sourceGroup">The group that owns the pane at the start of the drag.</param>
         public DockDragSession(DockPane pane, DockTabGroup sourceGroup)
         {
             Pane = pane;

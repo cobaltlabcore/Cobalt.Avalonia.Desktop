@@ -102,6 +102,11 @@ public class NavigationView : TemplatedControl
         set => SetValue(OrientationProperty, value);
     }
 
+    /// <summary>
+    /// Finds and wires <c>PART_ItemsListBox</c> and <c>PART_FooterListBox</c>,
+    /// synchronizes selection state, and applies orientation layout.
+    /// </summary>
+    /// <param name="e">The template applied event data containing the name scope.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -122,6 +127,11 @@ public class NavigationView : TemplatedControl
         ApplyOrientationLayout();
     }
 
+    /// <summary>
+    /// Responds to property changes by synchronizing list box selection when
+    /// <see cref="SelectedItem"/> changes, or updating layout when <see cref="Orientation"/> changes.
+    /// </summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -198,6 +208,12 @@ public class NavigationView : TemplatedControl
         ApplyItemOrientationClasses(FooterItems, horizontal);
     }
 
+    /// <summary>
+    /// Applies <c>:horizontal</c> and <c>:vertical</c> pseudo-classes to a collection of
+    /// <see cref="NavigationItem"/> instances based on the current orientation.
+    /// </summary>
+    /// <param name="items">The items to update, or <see langword="null"/> to skip.</param>
+    /// <param name="horizontal"><see langword="true"/> when the orientation is horizontal.</param>
     private static void ApplyItemOrientationClasses(IReadOnlyList<NavigationItem>? items, bool horizontal)
     {
         if (items == null) return;

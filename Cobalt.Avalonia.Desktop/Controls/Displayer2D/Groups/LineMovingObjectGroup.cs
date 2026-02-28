@@ -3,6 +3,11 @@ using Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Groups;
 
+/// <summary>
+/// A <see cref="DrawingObjectGroup"/> that manages a movable line defined by two endpoint handles.
+/// The line body acts as a drag target to translate both endpoints simultaneously; each endpoint
+/// handle can also be dragged independently to reposition it.
+/// </summary>
 public sealed class LineMovingObjectGroup : DrawingObjectGroup
 {
     private const double HitboxThickness = 20.0;
@@ -14,18 +19,25 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
     private readonly CircleShape _point1Hitbox;
     private readonly CircleShape _point2Hitbox;
 
+    /// <summary>Gets or sets the stroke brush of the line.</summary>
     public IBrush? LineStroke
     {
         get => _line.Stroke;
         set => _line.Stroke = value;
     }
 
+    /// <summary>Gets or sets the stroke thickness of the line in screen pixels.</summary>
     public double LineStrokeThickness
     {
         get => _line.StrokeThickness;
         set => _line.StrokeThickness = value;
     }
 
+    /// <summary>Initializes a new <see cref="LineMovingObjectGroup"/> with the given endpoint world coordinates.</summary>
+    /// <param name="x1">World-space X coordinate of the first endpoint.</param>
+    /// <param name="y1">World-space Y coordinate of the first endpoint.</param>
+    /// <param name="x2">World-space X coordinate of the second endpoint.</param>
+    /// <param name="y2">World-space Y coordinate of the second endpoint.</param>
     public LineMovingObjectGroup(double x1, double y1, double x2, double y2)
     {
         _line = new LineShape
@@ -110,6 +122,7 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         _hitbox.Moved += OnHitboxMoved;
     }
 
+    /// <inheritdoc/>
     public override void RecalculateCoordinates()
     {
         var x1 = _point1Hitbox.CenterX;
@@ -151,6 +164,7 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         RecalculateCoordinates();
     }
 
+    /// <inheritdoc/>
     public override void UnregisterEvents()
     {
         _point1.Moved -= OnPointMoved;

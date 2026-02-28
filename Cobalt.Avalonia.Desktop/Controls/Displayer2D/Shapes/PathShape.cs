@@ -3,13 +3,23 @@ using Avalonia.Media;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
+/// <summary>
+/// A shape that renders an arbitrary <see cref="Avalonia.Media.Geometry"/> with rotation and
+/// viewport transform applied. Stroke thickness is compensated for zoom so it remains
+/// constant in screen pixels.
+/// </summary>
 public sealed class PathShape : Shape
 {
+    /// <summary>Gets or sets the geometry to render. Setting this marks canvas coordinates as dirty.</summary>
     public Geometry? Geometry { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
 
     private Matrix _viewportMatrix = Matrix.Identity;
     private double _zoom = 1.0;
 
+    /// <summary>Recomputes the viewport transform matrix for the current zoom and pan.</summary>
+    /// <param name="zoom">The current zoom factor.</param>
+    /// <param name="panX">The horizontal pan offset.</param>
+    /// <param name="panY">The vertical pan offset.</param>
     protected override void RecalculateExtraCoordinates(double zoom, double panX, double panY)
     {
         _zoom = IsFixed ? 1.0 : zoom;
@@ -18,6 +28,8 @@ public sealed class PathShape : Shape
             : Matrix.CreateScale(zoom, zoom) * Matrix.CreateTranslation(panX, panY);
     }
 
+    /// <summary>Renders <see cref="Geometry"/> with fill and a zoom-compensated stroke.</summary>
+    /// <param name="context">The drawing context to render into.</param>
     public override void Render(DrawingContext context)
     {
         if (Geometry is null) return;

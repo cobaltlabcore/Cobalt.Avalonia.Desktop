@@ -9,12 +9,26 @@ using Avalonia;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Docking;
 
+/// <summary>
+/// Provides data for <see cref="DockTabGroup"/> pane events such as drag-start and close-request.
+/// </summary>
 public class DockTabGroupEventArgs : EventArgs
 {
+    /// <summary>Gets the pane that is the subject of the event.</summary>
     public DockPane Pane { get; }
+
+    /// <summary>Gets the <see cref="DockTabGroup"/> from which the pane originated.</summary>
     public DockTabGroup SourceGroup { get; }
+
+    /// <summary>Gets the pointer associated with the event, if any.</summary>
     public IPointer? Pointer { get; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="DockTabGroupEventArgs"/>.
+    /// </summary>
+    /// <param name="pane">The pane that triggered the event.</param>
+    /// <param name="sourceGroup">The group that owns the pane.</param>
+    /// <param name="pointer">The pointer involved in the interaction, or <see langword="null"/>.</param>
     public DockTabGroupEventArgs(DockPane pane, DockTabGroup sourceGroup, IPointer? pointer = null)
     {
         Pane = pane;
@@ -23,6 +37,10 @@ public class DockTabGroupEventArgs : EventArgs
     }
 }
 
+/// <summary>
+/// A templated control that displays a collection of <see cref="DockPane"/> instances as tabs,
+/// and raises events when a pane is dragged or a close is requested.
+/// </summary>
 public class DockTabGroup : TemplatedControl
 {
     private ListBox? _tabStrip;
@@ -31,22 +49,33 @@ public class DockTabGroup : TemplatedControl
     private bool _isDragging;
     private const double DragThreshold = 5.0;
 
+    /// <summary>Gets the collection of panes displayed as tabs in this group.</summary>
     public AvaloniaList<DockPane> Panes { get; } = new();
 
+    /// <summary>Defines the <see cref="SelectedPane"/> property.</summary>
     public static readonly StyledProperty<DockPane?> SelectedPaneProperty =
         AvaloniaProperty.Register<DockTabGroup, DockPane?>(
             nameof(SelectedPane),
             defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>Gets or sets the currently selected pane.</summary>
     public DockPane? SelectedPane
     {
         get => GetValue(SelectedPaneProperty);
         set => SetValue(SelectedPaneProperty, value);
     }
 
+    /// <summary>Raised when the user begins dragging a pane tab beyond the drag threshold.</summary>
     public event EventHandler<DockTabGroupEventArgs>? PaneDragStarted;
+
+    /// <summary>Raised when the user clicks the close button on a pane tab.</summary>
     public event EventHandler<DockTabGroupEventArgs>? PaneCloseRequested;
 
+    /// <summary>
+    /// Finds the <c>PART_TabStrip</c> template part, wires selection and pointer events,
+    /// and ensures an initial pane selection.
+    /// </summary>
+    /// <param name="e">The template applied event data.</param>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -73,6 +102,10 @@ public class DockTabGroup : TemplatedControl
             SelectedPane = Panes[0];
     }
 
+    /// <summary>
+    /// Synchronizes the tab strip's selected item when <see cref="SelectedPane"/> changes.
+    /// </summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -145,6 +178,11 @@ public class DockTabGroup : TemplatedControl
         _isDragging = false;
     }
 
+    /// <summary>
+    /// Determines whether the given visual or any of its ancestors is the pane close button.
+    /// </summary>
+    /// <param name="visual">The visual element to test.</param>
+    /// <returns><see langword="true"/> if the visual is part of a close button; otherwise <see langword="false"/>.</returns>
     private static bool IsCloseButton(Visual? visual)
     {
         var current = visual;
@@ -157,6 +195,11 @@ public class DockTabGroup : TemplatedControl
         return false;
     }
 
+    /// <summary>
+    /// Walks the visual tree upward to find the <see cref="DockPane"/> associated with a visual element.
+    /// </summary>
+    /// <param name="visual">The visual element to start from.</param>
+    /// <returns>The owning <see cref="DockPane"/>, or <see langword="null"/> if not found.</returns>
     private static DockPane? FindPaneFromVisual(Visual? visual)
     {
         var current = visual;

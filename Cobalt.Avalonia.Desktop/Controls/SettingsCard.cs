@@ -13,42 +13,55 @@ namespace Cobalt.Avalonia.Desktop.Controls;
 /// </summary>
 public class SettingsCard : TemplatedControl
 {
+    /// <summary>Defines the <see cref="Header"/> property.</summary>
     public static readonly StyledProperty<string?> HeaderProperty =
         AvaloniaProperty.Register<SettingsCard, string?>(nameof(Header));
 
+    /// <summary>Defines the <see cref="Description"/> property.</summary>
     public static readonly StyledProperty<string?> DescriptionProperty =
         AvaloniaProperty.Register<SettingsCard, string?>(nameof(Description));
 
+    /// <summary>Defines the <see cref="IconData"/> property.</summary>
     public static readonly StyledProperty<Geometry?> IconDataProperty =
         AvaloniaProperty.Register<SettingsCard, Geometry?>(nameof(IconData));
 
+    /// <summary>Defines the <see cref="Content"/> property.</summary>
     public static readonly StyledProperty<object?> ContentProperty =
         AvaloniaProperty.Register<SettingsCard, object?>(nameof(Content));
 
+    /// <summary>Defines the <see cref="Command"/> property.</summary>
     public static readonly StyledProperty<ICommand?> CommandProperty =
         AvaloniaProperty.Register<SettingsCard, ICommand?>(nameof(Command));
 
+    /// <summary>Defines the <see cref="CommandParameter"/> property.</summary>
     public static readonly StyledProperty<object?> CommandParameterProperty =
         AvaloniaProperty.Register<SettingsCard, object?>(nameof(CommandParameter));
 
+    /// <summary>Gets or sets the title text displayed in the card header.</summary>
     public string? Header
     {
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
     }
 
+    /// <summary>Gets or sets the subtitle text displayed beneath the header.</summary>
     public string? Description
     {
         get => GetValue(DescriptionProperty);
         set => SetValue(DescriptionProperty, value);
     }
 
+    /// <summary>Gets or sets the icon geometry displayed in the card.</summary>
     public Geometry? IconData
     {
         get => GetValue(IconDataProperty);
         set => SetValue(IconDataProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the content control on the right side of the card.
+    /// When set, the card is not clickable; when <see langword="null"/>, the card acts as a button.
+    /// </summary>
     [Content]
     public object? Content
     {
@@ -56,18 +69,22 @@ public class SettingsCard : TemplatedControl
         set => SetValue(ContentProperty, value);
     }
 
+    /// <summary>Gets or sets the command executed when the card is clicked (only when <see cref="Content"/> is <see langword="null"/>).</summary>
     public ICommand? Command
     {
         get => GetValue(CommandProperty);
         set => SetValue(CommandProperty, value);
     }
 
+    /// <summary>Gets or sets the parameter passed to <see cref="Command"/> when it is executed.</summary>
     public object? CommandParameter
     {
         get => GetValue(CommandParameterProperty);
         set => SetValue(CommandParameterProperty, value);
     }
 
+    /// <summary>Toggles the <c>:hasContent</c> pseudo-class when <see cref="Content"/> changes.</summary>
+    /// <param name="change">Details about the property that changed.</param>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);

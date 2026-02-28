@@ -4,6 +4,11 @@ using Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Groups;
 
+/// <summary>
+/// A <see cref="DrawingObjectGroup"/> that represents a rectangular region of interest (ROI)
+/// defined by two spine endpoints (A and B) and a half-width measured perpendicularly to the spine.
+/// Provides interactive handles for moving the body, repositioning each endpoint, and adjusting the width.
+/// </summary>
 public sealed class RectangleRoiGroup : DrawingObjectGroup
 {
     private readonly RectangleShape _rect;
@@ -23,6 +28,12 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
     private double _pointBX, _pointBY;
     private double _halfWidth;
 
+    /// <summary>Initializes a new <see cref="RectangleRoiGroup"/> with the given spine endpoints and half-width.</summary>
+    /// <param name="pointAX">World-space X coordinate of spine endpoint A.</param>
+    /// <param name="pointAY">World-space Y coordinate of spine endpoint A.</param>
+    /// <param name="pointBX">World-space X coordinate of spine endpoint B.</param>
+    /// <param name="pointBY">World-space Y coordinate of spine endpoint B.</param>
+    /// <param name="halfWidth">Half the width of the rectangle, measured perpendicularly to the spine.</param>
     public RectangleRoiGroup(double pointAX, double pointAY, double pointBX, double pointBY, double halfWidth)
     {
         _pointAX = pointAX;
@@ -164,6 +175,7 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         }
     }
 
+    /// <inheritdoc/>
     public override void RecalculateCoordinates()
     {
         var centerX = (_pointAX + _pointBX) / 2.0;
@@ -273,6 +285,7 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         RecalculateCoordinates();
     }
 
+    /// <inheritdoc/>
     public override void UnregisterEvents()
     {
         _bodyHitbox.Moved  -= OnBodyHitboxMoved;
