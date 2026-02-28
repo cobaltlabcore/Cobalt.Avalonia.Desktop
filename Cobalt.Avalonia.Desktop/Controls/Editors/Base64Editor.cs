@@ -1,27 +1,31 @@
+using Enigma.Cryptography.DataEncoding;
+
 namespace Cobalt.Avalonia.Desktop.Controls.Editors;
 
 public class Base64Editor : ByteArrayEditor
 {
-    protected override string FormatValue(byte[] value) =>
-        Convert.ToBase64String(value);
+    private static readonly Base64Service Base64Service = new();
+
+    protected override string FormatValue(byte[] value)
+        => Base64Service.Encode(value);
 
     protected override bool TryParse(string? text, out byte[] result)
     {
         result = [];
-        if (string.IsNullOrWhiteSpace(text)) return false;
-
-        // Strip whitespace before parsing
-        var cleaned = string.Concat(text.Where(c => !char.IsWhiteSpace(c)));
-        if (cleaned.Length == 0) return false;
+        var success = false;
+        
+        if (text is null) return true;
 
         try
         {
-            result = Convert.FromBase64String(cleaned);
-            return true;
+            result = Base64Service.Decode(text);
+            success = true;
         }
-        catch (FormatException)
+        catch
         {
-            return false;
+            //ignored
         }
+
+        return success;
     }
 }

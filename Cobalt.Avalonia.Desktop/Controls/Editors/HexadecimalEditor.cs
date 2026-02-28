@@ -1,56 +1,31 @@
-using System.Text;
+using Enigma.Cryptography.DataEncoding;
 
 namespace Cobalt.Avalonia.Desktop.Controls.Editors;
 
 public class HexadecimalEditor : ByteArrayEditor
 {
+    private static readonly HexService HexService = new();
+
     protected override string FormatValue(byte[] value)
-    {
-        var sb = new StringBuilder(value.Length * 3);
-        for (var i = 0; i < value.Length; i++)
-        {
-            if (i > 0) sb.Append(' ');
-            sb.Append(value[i].ToString("X2"));
-        }
-        return sb.ToString();
-    }
+        => HexService.Encode(value);
 
     protected override bool TryParse(string? text, out byte[] result)
     {
         result = [];
-        if (string.IsNullOrWhiteSpace(text)) return false;
+        var success = false;
+        
+        if (text is null) return true;
 
-        // Strip all whitespace
-        var hex = new StringBuilder(text.Length);
-        foreach (var c in text)
+        try
         {
-            if (char.IsWhiteSpace(c)) continue;
-            if (!IsHexChar(c)) return false;
-            hex.Append(c);
+            result = HexService.Decode(text);
+            success = true;
+        }
+        catch
+        {
+            //ignored
         }
 
-        if (hex.Length == 0 || hex.Length % 2 != 0) return false;
-
-        var bytes = new byte[hex.Length / 2];
-        for (var i = 0; i < bytes.Length; i++)
-        {
-            var hi = HexValue(hex[i * 2]);
-            var lo = HexValue(hex[i * 2 + 1]);
-            bytes[i] = (byte)((hi << 4) | lo);
-        }
-
-        result = bytes;
-        return true;
+        return success;
     }
-
-    private static bool IsHexChar(char c) =>
-        c is (>= '0' and <= '9') or (>= 'a' and <= 'f') or (>= 'A' and <= 'F');
-
-    private static int HexValue(char c) => c switch
-    {
-        >= '0' and <= '9' => c - '0',
-        >= 'a' and <= 'f' => c - 'a' + 10,
-        >= 'A' and <= 'F' => c - 'A' + 10,
-        _ => 0
-    };
 }
