@@ -11,7 +11,7 @@ public class MultiLineTextEditor : BaseEditor
 
     /// <summary>
     /// Initializes a new instance of <see cref="MultiLineTextEditor"/> with
-    /// <see cref="TextBox.AcceptsReturn"/> enabled, <see cref="BaseEditor.SelectAllTextOnFocus"/> disabled,
+    /// <see cref="global::Avalonia.Controls.TextBox.AcceptsReturn"/> enabled, <see cref="BaseEditor.SelectAllTextOnFocus"/> disabled,
     /// and text wrapping set to <see cref="global::Avalonia.Media.TextWrapping.Wrap"/>.
     /// </summary>
     public MultiLineTextEditor()

@@ -31,20 +31,6 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
     /// <summary>The invisible circle hitbox used to drag the second endpoint independently.</summary>
     private readonly CircleShape _point2Hitbox;
 
-    /// <summary>Gets or sets the stroke brush of the line.</summary>
-    public IBrush? LineStroke
-    {
-        get => _line.Stroke;
-        set => _line.Stroke = value;
-    }
-
-    /// <summary>Gets or sets the stroke thickness of the line in screen pixels.</summary>
-    public double LineStrokeThickness
-    {
-        get => _line.StrokeThickness;
-        set => _line.StrokeThickness = value;
-    }
-
     /// <summary>Initializes a new <see cref="LineMovingObjectGroup"/> with the given endpoint world coordinates.</summary>
     /// <param name="x1">World-space X coordinate of the first endpoint.</param>
     /// <param name="y1">World-space Y coordinate of the first endpoint.</param>
@@ -134,6 +120,20 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         _hitbox.Moved += OnHitboxMoved;
     }
 
+    /// <summary>Gets or sets the stroke brush of the line.</summary>
+    public IBrush? LineStroke
+    {
+        get => _line.Stroke;
+        set => _line.Stroke = value;
+    }
+
+    /// <summary>Gets or sets the stroke thickness of the line in screen pixels.</summary>
+    public double LineStrokeThickness
+    {
+        get => _line.StrokeThickness;
+        set => _line.StrokeThickness = value;
+    }
+
     /// <inheritdoc/>
     public override void RecalculateCoordinates()
     {
@@ -162,6 +162,15 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         _hitbox.Rotation = angle;
     }
 
+    /// <inheritdoc/>
+    public override void UnregisterEvents()
+    {
+        _point1.Moved -= OnPointMoved;
+        _point2.Moved -= OnPointMoved;
+        _hitbox.Moved -= OnHitboxMoved;
+        UnregisterCollectionEvents();
+    }
+
     /// <summary>Recalculates all coordinates when an endpoint hitbox is moved.</summary>
     /// <param name="sender">The endpoint hitbox that was moved.</param>
     /// <param name="e">The move event data.</param>
@@ -180,14 +189,5 @@ public sealed class LineMovingObjectGroup : DrawingObjectGroup
         _point2Hitbox.CenterX += e.DeltaX;
         _point2Hitbox.CenterY += e.DeltaY;
         RecalculateCoordinates();
-    }
-
-    /// <inheritdoc/>
-    public override void UnregisterEvents()
-    {
-        _point1.Moved -= OnPointMoved;
-        _point2.Moved -= OnPointMoved;
-        _hitbox.Moved -= OnHitboxMoved;
-        UnregisterCollectionEvents();
     }
 }

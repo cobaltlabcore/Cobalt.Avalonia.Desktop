@@ -10,10 +10,26 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 public sealed class LineShape : Shape
 {
     /// <summary>Gets or sets the world-space X coordinate of the line's second endpoint.</summary>
-    public double X2 { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public double X2
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets or sets the world-space Y coordinate of the line's second endpoint.</summary>
-    public double Y2 { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public double Y2
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets the canvas-space X coordinate of the second endpoint.</summary>
     public double CanvasX2 { get; private set; }

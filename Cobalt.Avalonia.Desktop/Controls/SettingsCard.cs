@@ -98,6 +98,9 @@ public class SettingsCard : TemplatedControl
         }
     }
 
+
+    /// <summary>Handles the pointer pressed event. Executes the command if applicable and updates the visual state.</summary>
+    /// <param name="e">The event data for the pointer press.</param>
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);

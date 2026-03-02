@@ -268,6 +268,17 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
         _widthHitboxes[1].CenterY = centerY - _halfWidth * perpY;
     }
 
+    /// <inheritdoc/>
+    public override void UnregisterEvents()
+    {
+        _bodyHitbox.Moved  -= OnBodyHitboxMoved;
+        _pointAHitbox.Moved -= OnPointAHitboxMoved;
+        _pointBHitbox.Moved -= OnPointBHitboxMoved;
+        for (int i = 0; i < 2; i++)
+            _widthHitboxes[i].Moved -= _widthMovedHandlers[i];
+        UnregisterCollectionEvents();
+    }
+
     /// <summary>Translates both spine endpoints by the drag delta, then recalculates all coordinates.</summary>
     /// <param name="sender">The body hitbox that was moved.</param>
     /// <param name="e">The move event data.</param>
@@ -326,16 +337,5 @@ public sealed class RectangleRoiGroup : DrawingObjectGroup
             _halfWidth = Math.Max(5.0, _halfWidth - projected);
 
         RecalculateCoordinates();
-    }
-
-    /// <inheritdoc/>
-    public override void UnregisterEvents()
-    {
-        _bodyHitbox.Moved  -= OnBodyHitboxMoved;
-        _pointAHitbox.Moved -= OnPointAHitboxMoved;
-        _pointBHitbox.Moved -= OnPointBHitboxMoved;
-        for (int i = 0; i < 2; i++)
-            _widthHitboxes[i].Moved -= _widthMovedHandlers[i];
-        UnregisterCollectionEvents();
     }
 }

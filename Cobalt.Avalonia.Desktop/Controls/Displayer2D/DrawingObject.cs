@@ -12,34 +12,99 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D;
 public abstract class DrawingObject : ObservableObject
 {
     /// <summary>Gets or sets the world-space X coordinate of the top-left corner.</summary>
-    public double X { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public double X
+    {
+        get;
+        set { SetProperty(ref field, value);
+            MarkCoordinatesDirty(); }
+    }
 
     /// <summary>Gets or sets the world-space Y coordinate of the top-left corner.</summary>
-    public double Y { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public double Y
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets or sets the draw order; higher values are rendered on top of lower values.</summary>
-    public int ZIndex { get; set => SetProperty(ref field, value); }
+    public int ZIndex
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
 
     /// <summary>Gets or sets the world-space width of the object's bounding box.</summary>
-    public double Width { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } } = 100;
+    public double Width
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    } = 100;
 
     /// <summary>Gets or sets the world-space height of the object's bounding box.</summary>
-    public double Height { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } } = 100;
+    public double Height
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    } = 100;
 
     /// <summary>Gets or sets the clockwise rotation angle in degrees around the bounding-box centre.</summary>
-    public double Rotation { get; set => SetProperty(ref field, value); }
+    public double Rotation
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
 
     /// <summary>Gets or sets a value indicating whether this object is rendered.</summary>
-    public bool IsVisible { get; set => SetProperty(ref field, value); } = true;
+    public bool IsVisible
+    {
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
     /// <summary>Gets or sets a value indicating whether this object is fixed to screen space, ignoring zoom and pan.</summary>
-    public bool IsFixed { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public bool IsFixed
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets or sets a value indicating whether the object's width is fixed in screen pixels while its position still follows zoom and pan.</summary>
-    public bool IsFixedWidth { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public bool IsFixedWidth
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets or sets a value indicating whether the object's height is fixed in screen pixels while its position still follows zoom and pan.</summary>
-    public bool IsFixedHeight { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
+    public bool IsFixedHeight
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Gets the computed X coordinate in canvas (screen) space.</summary>
     public double CanvasX { get; protected set; }

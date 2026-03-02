@@ -15,7 +15,7 @@ public abstract class ByteArrayEditor : MultiLineTextEditor
         AvaloniaProperty.Register<ByteArrayEditor, byte[]?>(nameof(Value),
             defaultBindingMode: global::Avalonia.Data.BindingMode.TwoWay);
 
-    /// <summary>Guards against re-entrant synchronisation between <see cref="Value"/> and <see cref="TextBox.Text"/>.</summary>
+    /// <summary>Guards against re-entrant synchronisation between <see cref="Value"/> and <see cref="global::Avalonia.Controls.TextBox.Text"/>.</summary>
     private bool _isSyncing;
 
     /// <summary>Gets or sets the byte array value represented by this editor.</summary>
@@ -45,7 +45,7 @@ public abstract class ByteArrayEditor : MultiLineTextEditor
 
     /// <summary>
     /// Initializes static members of <see cref="ByteArrayEditor"/>.
-    /// Registers property-changed handlers that keep <see cref="Value"/> and <see cref="TextBox.Text"/> in sync.
+    /// Registers property-changed handlers that keep <see cref="Value"/> and <see cref="global::Avalonia.Controls.TextBox.Text"/> in sync.
     /// </summary>
     static ByteArrayEditor()
     {
@@ -61,7 +61,7 @@ public abstract class ByteArrayEditor : MultiLineTextEditor
     }
 
     /// <summary>
-    /// Updates <see cref="TextBox.Text"/> to reflect the current <see cref="Value"/>, suppressing the
+    /// Updates <see cref="global::Avalonia.Controls.TextBox.Text"/> to reflect the current <see cref="Value"/>, suppressing the
     /// reciprocal text-to-value synchronisation.
     /// </summary>
     private void SyncTextFromValue()
@@ -81,7 +81,7 @@ public abstract class ByteArrayEditor : MultiLineTextEditor
     }
 
     /// <summary>
-    /// Updates <see cref="Value"/> from the current <see cref="TextBox.Text"/>, setting a validation error
+    /// Updates <see cref="Value"/> from the current <see cref="global::Avalonia.Controls.TextBox.Text"/>, setting a validation error
     /// if the text cannot be decoded.
     /// </summary>
     private void SyncValueFromText()
