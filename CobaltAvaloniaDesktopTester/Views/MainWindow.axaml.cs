@@ -1,6 +1,5 @@
-using System.ComponentModel;
 using Avalonia.Controls;
-using Cobalt.Avalonia.Desktop.Controls;
+using Cobalt.Avalonia.Desktop.Controls.ContentDialog;
 using CobaltAvaloniaDesktopTester.ViewModels;
 
 namespace CobaltAvaloniaDesktopTester.Views;

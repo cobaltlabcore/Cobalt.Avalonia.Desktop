@@ -1,4 +1,4 @@
-using Cobalt.Avalonia.Desktop.Controls;
+using Cobalt.Avalonia.Desktop.Controls.ContentDialog;
 
 namespace Cobalt.Avalonia.Desktop.Services;
 

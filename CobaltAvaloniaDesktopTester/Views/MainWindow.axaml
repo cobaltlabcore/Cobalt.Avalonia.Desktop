@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:CobaltAvaloniaDesktopTester.ViewModels"
         xmlns:controls="using:Cobalt.Avalonia.Desktop.Controls"
+        xmlns:contentDialog="using:Cobalt.Avalonia.Desktop.Controls.ContentDialog"
+        xmlns:infoBar="using:Cobalt.Avalonia.Desktop.Controls.InfoBar"
         xmlns:nav="using:Cobalt.Avalonia.Desktop.Controls.Navigation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -24,8 +26,8 @@
                             Margin="0" />
         </DockPanel>
 
-        <controls:ContentDialog x:Name="HostDialog" />
+        <contentDialog:ContentDialog x:Name="HostDialog" />
         <controls:Overlay x:Name="HostOverlay" />
-        <controls:InfoBar x:Name="HostInfoBar" />
+        <infoBar:InfoBar x:Name="HostInfoBar" />
     </Panel>
 </Window>

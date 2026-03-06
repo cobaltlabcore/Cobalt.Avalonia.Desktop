@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Cobalt.Avalonia.Desktop.Controls;
+using Cobalt.Avalonia.Desktop.Controls.ContentDialog;
 using Cobalt.Avalonia.Desktop.Services;
 using CobaltAvaloniaDesktopTester.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
