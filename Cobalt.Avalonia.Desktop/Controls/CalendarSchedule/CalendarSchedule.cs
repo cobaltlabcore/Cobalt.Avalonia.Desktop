@@ -42,40 +42,6 @@ public class CalendarSchedule : TemplatedControl
     /// <summary>Raised when an appointment's start or end time is changed via drag-resize in the week view.</summary>
     public event EventHandler<CalendarScheduleItemChangedEventArgs>? ItemResized;
 
-    /// <summary>Holds transient state for an in-progress appointment drag or resize gesture.</summary>
-    private sealed class ScheduleDragSession
-    {
-        /// <summary>Whether this session is moving or resizing the appointment.</summary>
-        public ScheduleInteractionMode Mode;
-
-        /// <summary>The appointment being interacted with.</summary>
-        public CalendarScheduleItem Item = null!;
-
-        /// <summary>The <see cref="Border"/> visual representing the appointment.</summary>
-        public Border Border = null!;
-
-        /// <summary>The appointment's start time at the beginning of the drag, used to revert on cancel.</summary>
-        public DateTimeOffset OriginalStart;
-
-        /// <summary>The appointment's end time at the beginning of the drag, used to revert on cancel.</summary>
-        public DateTimeOffset OriginalEnd;
-
-        /// <summary>The grid-space pointer position when the drag was initiated, used to detect threshold.</summary>
-        public Point StartPointerPosition;
-
-        /// <summary>The vertical offset from the top of the appointment border to the pointer, used to keep the grab point stable during a move.</summary>
-        public double PointerToTopOffset;
-
-        /// <summary>The semi-transparent ghost border placed at the original position during a drag, or <see langword="null"/> before threshold is exceeded.</summary>
-        public Border? Ghost;
-
-        /// <summary>Whether the pointer has moved beyond <see cref="DragThreshold"/> pixels from the starting position.</summary>
-        public bool ThresholdExceeded;
-
-        /// <summary>The 0-based day column index of the appointment at the start of the drag.</summary>
-        public int OriginalDayIndex;
-    }
-
     /// <summary>The active drag or resize session, or <see langword="null"/> when no gesture is in progress.</summary>
     private ScheduleDragSession? _dragSession;
 

@@ -7,7 +7,7 @@ namespace Cobalt.Avalonia.Desktop.Controls.Editors;
 #pragma warning disable AVP1002 // Properties are accessed via non-generic concrete types in XAML
 /// <summary>
 /// Abstract base class for typed struct editors. Keeps a strongly-typed <see cref="Value"/> property
-/// in sync with the underlying <see cref="TextBox.Text"/>, performing parsing on text change and
+/// in sync with the underlying <see cref="global::Avalonia.Controls.TextBox.Text"/>, performing parsing on text change and
 /// reformatting on focus loss.
 /// </summary>
 /// <typeparam name="T">The value type this editor edits. Must be a struct.</typeparam>
@@ -26,7 +26,7 @@ public abstract class BaseEditor<T> : BaseEditor where T : struct
         AvaloniaProperty.Register<BaseEditor<T>, bool>(nameof(NullWhenEmpty));
 #pragma warning restore AVP1002
 
-    /// <summary>Guards against re-entrant synchronisation between <see cref="Value"/> and <see cref="TextBox.Text"/>.</summary>
+    /// <summary>Guards against re-entrant synchronisation between <see cref="Value"/> and <see cref="global::Avalonia.Controls.TextBox.Text"/>.</summary>
     private bool _isSyncing;
 
     /// <summary>Tracks whether the user has modified the text since the last focus or value change.</summary>
@@ -76,7 +76,7 @@ public abstract class BaseEditor<T> : BaseEditor where T : struct
 
     /// <summary>
     /// Initializes static members of <see cref="BaseEditor{T}"/>.
-    /// Registers property-changed handlers that keep <see cref="Value"/> and <see cref="TextBox.Text"/> in sync.
+    /// Registers property-changed handlers that keep <see cref="Value"/> and <see cref="global::Avalonia.Controls.TextBox.Text"/> in sync.
     /// </summary>
     static BaseEditor()
     {
@@ -94,7 +94,7 @@ public abstract class BaseEditor<T> : BaseEditor where T : struct
     }
 
     /// <summary>
-    /// Updates <see cref="TextBox.Text"/> to reflect the current <see cref="Value"/>, suppressing the
+    /// Updates <see cref="global::Avalonia.Controls.TextBox.Text"/> to reflect the current <see cref="Value"/>, suppressing the
     /// reciprocal text-to-value synchronisation.
     /// </summary>
     private void SyncTextFromValue()
@@ -113,7 +113,7 @@ public abstract class BaseEditor<T> : BaseEditor where T : struct
     }
 
     /// <summary>
-    /// Updates <see cref="Value"/> from the current <see cref="TextBox.Text"/>, setting a parse error
+    /// Updates <see cref="Value"/> from the current <see cref="global::Avalonia.Controls.TextBox.Text"/>, setting a parse error
     /// if the text cannot be converted.
     /// </summary>
     private void SyncValueFromText()

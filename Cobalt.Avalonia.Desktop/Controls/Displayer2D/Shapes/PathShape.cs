@@ -4,20 +4,28 @@ using Avalonia.Media;
 namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 
 /// <summary>
-/// A shape that renders an arbitrary <see cref="Avalonia.Media.Geometry"/> with rotation and
+/// A shape that renders an arbitrary <see cref="global::Avalonia.Media.Geometry"/> with rotation and
 /// viewport transform applied. Stroke thickness is compensated for zoom so it remains
 /// constant in screen pixels.
 /// </summary>
 public sealed class PathShape : Shape
 {
-    /// <summary>Gets or sets the geometry to render. Setting this marks canvas coordinates as dirty.</summary>
-    public Geometry? Geometry { get; set { SetProperty(ref field, value); MarkCoordinatesDirty(); } }
-
     /// <summary>The combined scale-and-translate matrix derived from the current zoom and pan, applied before rendering the geometry.</summary>
     private Matrix _viewportMatrix = Matrix.Identity;
 
     /// <summary>The zoom factor captured during the last coordinate recalculation, used to compensate stroke thickness.</summary>
     private double _zoom = 1.0;
+
+    /// <summary>Gets or sets the geometry to render. Setting this marks canvas coordinates as dirty.</summary>
+    public Geometry? Geometry
+    {
+        get;
+        set
+        {
+            SetProperty(ref field, value);
+            MarkCoordinatesDirty();
+        }
+    }
 
     /// <summary>Recomputes the viewport transform matrix for the current zoom and pan.</summary>
     /// <param name="zoom">The current zoom factor.</param>

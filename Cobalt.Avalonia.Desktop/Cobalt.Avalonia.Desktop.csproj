@@ -14,7 +14,9 @@
     <Version>0.1.0</Version>
     <Description>A comprehensive Avalonia UI control library for .NET desktop applications. Includes navigation, docking, ribbon, editors, calendar/scheduling, and 2D display controls, along with a CollectionView data subsystem and dialog/overlay services. Built on Avalonia 11.3 with Fluent theme (Dark &amp; Light variants), full MVVM support, and dependency injection integration.</Description>
     <PackageTags>avalonia;controls;desktop;navigation;docking;ribbon;editors;mvvm;fluent;ui;dialog;settings;collectionview;overlay;infobar</PackageTags>
-    <RepositoryUrl>https://github.com/cobaltlabcore/Cobalt.Avalonia</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/cobaltlabcore/Cobalt.Avalonia.Desktop</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>

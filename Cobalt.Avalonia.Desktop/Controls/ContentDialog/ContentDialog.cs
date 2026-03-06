@@ -6,25 +6,7 @@ using Avalonia.Media;
 using Avalonia;
 using System.Windows.Input;
 
-namespace Cobalt.Avalonia.Desktop.Controls;
-
-/// <summary>
-/// Specifies the result of a <see cref="ContentDialog"/> interaction.
-/// </summary>
-public enum DialogResult
-{
-    /// <summary>No button was pressed; the dialog was dismissed without a definitive choice.</summary>
-    None,
-
-    /// <summary>The primary action button was pressed.</summary>
-    Primary,
-
-    /// <summary>The secondary action button was pressed.</summary>
-    Secondary,
-
-    /// <summary>The close button was pressed.</summary>
-    Close
-}
+namespace Cobalt.Avalonia.Desktop.Controls.ContentDialog;
 
 /// <summary>
 /// A modal dialog overlay that presents a title, content, and up to three action buttons.
@@ -338,23 +320,4 @@ public class ContentDialog : ContentControl
 
         return tcs.Task;
     }
-}
-
-/// <summary>
-/// Specifies which button in a <see cref="ContentDialog"/> is styled as the default action.
-/// </summary>
-// TODO: Should this enum be here ??
-public enum DefaultButton
-{
-    /// <summary>No button is styled as the default.</summary>
-    None,
-
-    /// <summary>The primary button is styled as the default.</summary>
-    Primary,
-
-    /// <summary>The secondary button is styled as the default.</summary>
-    Secondary,
-
-    /// <summary>The close button is styled as the default.</summary>
-    Close
 }

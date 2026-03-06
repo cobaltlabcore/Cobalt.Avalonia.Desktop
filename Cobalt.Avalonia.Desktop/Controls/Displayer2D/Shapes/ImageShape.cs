@@ -7,7 +7,11 @@ namespace Cobalt.Avalonia.Desktop.Controls.Displayer2D.Shapes;
 public class ImageShape : DrawingObject
 {
     /// <summary>Gets or sets the image to draw.</summary>
-    public IImage? Source { get; set => SetProperty(ref field, value); }
+    public IImage? Source
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
 
     /// <summary>Renders <see cref="Source"/> scaled to fill the canvas bounding box.</summary>
     /// <param name="context">The drawing context to render into.</param>

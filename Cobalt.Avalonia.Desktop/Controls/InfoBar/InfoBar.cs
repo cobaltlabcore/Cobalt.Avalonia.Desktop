@@ -3,25 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia;
 
-namespace Cobalt.Avalonia.Desktop.Controls;
-
-/// <summary>
-/// Specifies the visual severity of an <see cref="InfoBar"/> message.
-/// </summary>
-public enum InfoBarSeverity
-{
-    /// <summary>Informational message with neutral styling.</summary>
-    Info,
-
-    /// <summary>Success message with positive styling.</summary>
-    Success,
-
-    /// <summary>Warning message indicating a potential issue.</summary>
-    Warning,
-
-    /// <summary>Error message indicating a failure or critical problem.</summary>
-    Error
-}
+namespace Cobalt.Avalonia.Desktop.Controls.InfoBar;
 
 /// <summary>
 /// An inline notification control that displays a title, message, and severity indicator.
