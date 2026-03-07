@@ -11,7 +11,7 @@ A comprehensive, reusable Avalonia UI control library featuring modern navigatio
 - **2D Canvas (Displayer2D)** — Zoomable/pannable 2D drawing surface with shape primitives, images, text, and pluggable interaction handlers
 - **Calendar & Schedule** — Month and week views with drag-to-move, resize, mini-calendar sidebar, and event callbacks
 - **Service-Based Components** — ContentDialog, Overlay, InfoBar, File/Folder dialogs via injectable services
-- **Settings Controls** — SettingsCard, SettingsCardControl (clickable), and SettingsCardExpander for configuration UIs
+- **Settings Controls** — SettingsCard and SettingsCardExpander for configuration UIs
 - **Dark/Light Theme Support** — Complete theming system with dynamic resource switching
 - **Compiled Bindings** — Performance-optimized with compiled bindings by default
 - **Host Integration** — Works with `Microsoft.Extensions.Hosting` for clean service lifetime and `IHostedService` support
@@ -28,14 +28,14 @@ A comprehensive, reusable Avalonia UI control library featuring modern navigatio
 
 | Control | Description |
 |---|---|
-| `NavigationControl` | Sidebar navigation host with `Items`, `FooterItems`, `SelectedItem`, and `Vertical`/`Horizontal` orientation |
-| `NavigationItemControl` | A single navigation entry with `Header`, `IconData`, `PageType`, and `PageViewModelType` |
+| `NavigationView` | Sidebar navigation host with `Items`, `FooterItems`, `SelectedItem`, and `Vertical`/`Horizontal` orientation |
+| `NavigationItem` | A single navigation entry with `Header`, `IconData`, `PageType`, and `PageViewModelType` |
 
 ### Docking
 
 | Control | Description |
 |---|---|
-| `DockingControl` | Top-level docking container. Holds `Panes` or builds from a `LayoutRoot` model. Handles drag-and-drop between groups |
+| `DockingHost` | Top-level docking container. Holds `Panes` or builds from a `LayoutRoot` model. Handles drag-and-drop between groups |
 | `DockPane` | A single dockable panel with `Header`, `PaneContent`, `CanClose`, `CanMove` |
 | `DockTabGroup` | Tabbed container for multiple `DockPane` instances with drag detection and close buttons |
 | `DockSplitContainer` | Resizable two-pane splitter with configurable `Orientation` and `GridLength` sizes |
@@ -46,7 +46,7 @@ Layout model classes for serialisation: `DockPaneModel`, `DockTabGroupModel`, `D
 
 | Control | Description |
 |---|---|
-| `RibbonControl` | Top-level ribbon with `Tabs` collection and `SelectedTab`/`SelectedIndex` |
+| `Ribbon` | Top-level ribbon with `Tabs` collection and `SelectedTab`/`SelectedIndex` |
 | `RibbonTab` | A ribbon tab page with `Header` and `Groups` collection |
 | `RibbonGroup` | A named group of controls within a tab |
 | `RibbonButton` | Clickable ribbon button with `Header`, `IconData`, `Command` |
@@ -91,8 +91,7 @@ All editors inherit from `BaseEditor` and support `Title`, `Unit`, `ActionConten
 
 | Control / Class | Description |
 |---|---|
-| `Displayer2DControl` | Zoomable/pannable 2D canvas with `DrawingObjects`, `ZoomFactor`, `PanX`, `PanY` |
-| `Displayer2DCanvas` | Inner rendering surface |
+| `Displayer2D` | Zoomable/pannable 2D canvas with `DrawingObjects`, `ZoomFactor`, `PanX`, `PanY` |
 | `DrawingObject` | Abstract base for all drawable objects (position, size, rotation, z-index, visibility) |
 | `RectangleShape` | Rectangle primitive |
 | `CircleShape` | Circle primitive |
@@ -102,6 +101,8 @@ All editors inherit from `BaseEditor` and support `Title`, `Unit`, `ActionConten
 | `TextShape` | Rendered text |
 | `ImageShape` | Bitmap image |
 | `DrawingObjectGroup` | Groups objects with shared visibility/transform |
+| `LineMovingObjectGroup` | Composite group: movable line with two independently-draggable endpoint handles |
+| `RectangleRoiGroup` | Composite group: resizable rectangle ROI with corner/edge drag handles |
 | `UserInteraction` | Base class for pluggable input handlers (pan, zoom, selection) |
 | `DragInteraction` | Built-in pan/zoom interaction |
 
@@ -109,7 +110,7 @@ All editors inherit from `BaseEditor` and support `Title`, `Unit`, `ActionConten
 
 | Control | Description |
 |---|---|
-| `CalendarScheduleControl` | Full calendar with month/week views, drag-to-move, edge-resize, mini-calendar sidebar |
+| `CalendarSchedule` | Full calendar with month/week views, drag-to-move, edge-resize, mini-calendar sidebar |
 | `CalendarScheduleItem` | Data class: `Title`, `Start`, `End`, `Color`, `Description` |
 
 Events: `ItemMoved`, `ItemResized` with `CalendarScheduleItemChangedEventArgs`.
@@ -119,15 +120,14 @@ Events: `ItemMoved`, `ItemResized` with `CalendarScheduleItemChangedEventArgs`.
 | Control | Description |
 |---|---|
 | `ContentDialog` | Modal dialog overlay with primary/secondary/close buttons and `ShowAsync()` |
-| `InfoBarControl` | In-app notification bar with `Severity` (Info/Success/Warning/Error) |
-| `OverlayPresenter` | Full-screen overlay host for arbitrary content |
+| `InfoBar` | In-app notification bar with `Severity` (Info/Success/Warning/Error) |
+| `Overlay` | Full-screen overlay host for arbitrary content |
 
 ### Settings
 
 | Control | Description |
 |---|---|
 | `SettingsCard` | Static settings row with `Header`, `Description`, `IconData`, and content slot |
-| `SettingsCardControl` | Clickable settings card with `Command` support |
 | `SettingsCardExpander` | Expandable settings card with `IsExpanded` toggle |
 
 ## Services
@@ -136,8 +136,8 @@ Events: `ItemMoved`, `ItemResized` with `CalendarScheduleItemChangedEventArgs`.
 |---|---|---|
 | `INavigationService` | `NavigationService` | Manages navigation items, selection, and async page lifecycle (`OnAppearingAsync`/`OnDisappearingAsync`) |
 | `IContentDialogService` | `ContentDialogService` | Shows modal dialogs via a registered `ContentDialog` host |
-| `IInfoBarService` | `InfoBarService` | Shows notification bars via a registered `InfoBarControl` host |
-| `IOverlayService` | `OverlayService` | Shows full-screen overlays via a registered `OverlayPresenter` host |
+| `IInfoBarService` | `InfoBarService` | Shows notification bars via a registered `InfoBar` host |
+| `IOverlayService` | `OverlayService` | Shows full-screen overlays via a registered `Overlay` host |
 | `IFileDialogService` | `FileDialogService` | Wraps `IStorageProvider` for open/save file dialogs (with extension methods for simplified usage) |
 | `IFolderDialogService` | `FolderDialogService` | Wraps `IStorageProvider` for folder picker dialogs (with extension methods for simplified usage) |
 
@@ -150,7 +150,7 @@ Page ViewModels can implement `INavigationViewModel` for lifecycle hooks:
 ### 1. Add Package Reference
 
 ```bash
-dotnet add package Cobalt.Avalonia.Desktop
+dotnet add package CobaltAvaloniaDesktop
 ```
 
 ### 2. Include Theme Resources
@@ -329,8 +329,8 @@ For ContentDialog, Overlay, and InfoBar services, add host controls as siblings 
 
     <!-- Service host controls (must be siblings at root level) -->
     <controls:ContentDialog x:Name="HostDialog" />
-    <controls:OverlayPresenter x:Name="HostOverlay" />
-    <controls:InfoBarControl x:Name="HostInfoBar" />
+    <controls:Overlay x:Name="HostOverlay" />
+    <controls:InfoBar x:Name="HostInfoBar" />
   </Panel>
 </Window>
 ```
@@ -420,7 +420,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         _navigationService = navigationService;
 
-        _navigationService.Items.Add(new NavigationItemControl
+        _navigationService.Items.Add(new NavigationItem
         {
             Header = "Home",
             IconData = IconService.CreateGeometry(Icon.House, IconType.regular),
@@ -503,17 +503,18 @@ var folders = await _folderDialogService.ShowOpenFolderDialogAsync(
 ```
 Cobalt.Avalonia.Desktop/
 ├── Controls/
-│   ├── Navigation/          # NavigationControl, NavigationItemControl
-│   ├── Docking/             # DockingControl, DockPane, DockTabGroup, DockSplitContainer
-│   ├── Ribbon/              # RibbonControl, RibbonTab, RibbonGroup, RibbonButton, etc.
+│   ├── Navigation/          # NavigationView, NavigationItem
+│   ├── Docking/             # DockingHost, DockPane, DockTabGroup, DockSplitContainer
+│   ├── Ribbon/              # Ribbon, RibbonTab, RibbonGroup, RibbonButton, etc.
 │   ├── Editors/             # BaseEditor, typed editors (Int, Double, Text, Base64, etc.)
-│   ├── CalendarSchedule/    # CalendarScheduleControl
-│   ├── Displayer2D/         # Displayer2DControl, shapes, interaction handlers
-│   ├── ContentDialog.cs     # Modal dialog control
-│   ├── OverlayPresenter.cs  # Overlay host control
-│   ├── InfoBarControl.cs    # Notification bar control
+│   ├── CalendarSchedule/    # CalendarSchedule, CalendarScheduleItem, CalendarViewMode, ScheduleInteractionMode, ScheduleDragSession, CalendarScheduleItemChangedEventArgs
+│   ├── ContentDialog/       # ContentDialog, DefaultButton, DialogResult
+│   ├── InfoBar/             # InfoBar, InfoBarSeverity
+│   ├── Displayer2D/
+│   │   ├── Groups/          # LineMovingObjectGroup, RectangleRoiGroup
+│   │   └── Shapes/          # Shape primitives + MovedEventArgs
+│   ├── Overlay.cs           # Overlay host control
 │   ├── SettingsCard.cs      # Static settings row
-│   ├── SettingsCardControl.cs   # Clickable settings card
 │   └── SettingsCardExpander.cs  # Expandable settings card
 ├── Services/
 │   ├── NavigationService.cs
